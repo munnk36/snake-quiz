@@ -1,0 +1,56 @@
+.attribution {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 12px;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    flex-wrap: wrap;
+}
+
+.photoBy {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.observer {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.separator {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.link {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: 500;
+}
+
+.link:hover {
+    color: #45a049;
+    text-decoration: underline;
+}
+
+.license {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+}
+
+/* Optional: Add positioning utilities */
+.bottomRight {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+}
+
+.bottomLeft {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+}

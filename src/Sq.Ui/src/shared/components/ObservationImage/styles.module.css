@@ -1,0 +1,36 @@
+.imageContainer {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.attribution {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+}
+
+.container {
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
