@@ -1,18 +1,14 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { getQuizObservations, Observation } from './observations';
+import { getQuizObservations, QuizData } from './observations';
 
-interface QuizData {
-    quizId: string;
-    observations: Observation[];
-}
-
-export const useQuizObservations = (
+export default function useQuizObservations(
+    numberOfObservations: number = 10,
     quizId?: string,
-    numberOfObservations: number = 10
-): UseQueryResult<QuizData, Error> => {
+    placeId?: string,
+): UseQueryResult<QuizData, Error> {
     return useQuery({
         queryKey: ['quiz', quizId || 'random'],
-        queryFn: () => getQuizObservations(quizId, numberOfObservations),
+        queryFn: () => getQuizObservations(numberOfObservations, quizId, placeId),
         staleTime: Infinity,
         refetchOnWindowFocus: false
     });

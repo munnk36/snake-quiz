@@ -1,29 +1,35 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useQuizObservations } from '../../services/api/hooks';
-import ObservationImage from '../../shared/components/ObservationImage';
 import { getLargeImageUrl } from '../../shared/utils/imageUtils';
+import useQuizObservations from '../../services/api/hooks';
+import { ObservationImage } from '../../shared/components';
 
 export default function QuizPage() {
-    const { quizId } = useParams<{ quizId?: string }>();
+    const { quizId, placeId } = useParams();
     const navigate = useNavigate();
-    const { data, isLoading, isError } = useQuizObservations(quizId);
+    const { 
+        data, 
+        isLoading, 
+        error 
+    } = useQuizObservations(10, quizId, placeId);
+
+    useEffect(() => {
+        if (!data || error) return;
+
+        if (location.pathname.startsWith('/quiz/place/') && placeId) {
+            navigate(`/quiz/${data.quizId}/${placeId}`, { replace: true });
+        }
+    }, [placeId, navigate, data, error]);
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [isQuizComplete, setIsQuizComplete] = useState(false);
 
-    useEffect(() => {
-        if (data?.quizId && !quizId) {
-            navigate(`/quiz/${data.quizId}`);
-        }
-    }, [data?.quizId, quizId, navigate]);
-
     if (isLoading) {
         return <div>Loading quiz...</div>;
     }
 
-    if (isError) {
+    if (error) {
         return <div>Error loading quiz</div>;
     }
 

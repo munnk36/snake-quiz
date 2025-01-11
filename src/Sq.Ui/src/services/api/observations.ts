@@ -29,10 +29,11 @@ export interface QuizData {
     observations: Observation[];
 }
 
-export const getQuizObservations = async (
+export async function getQuizObservations (
+    numberOfObservations: number,
     quizId?: string,
-    numberOfObservations: number = 10
-): Promise<QuizData> => {
+    placeId?: string,
+): Promise<QuizData> {
     const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
     const rng = seedrandom(generatedQuizId);
 
@@ -44,8 +45,13 @@ export const getQuizObservations = async (
         per_page: '1',
         verifiable: 'true',
         photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
-        term_value_id: '18',
+        term_id: '17',
+        term_value_id: '18,20', //only show live animals
     });
+
+    if (placeId) {
+        countParams.append('place_id', placeId);
+    }
 
     const countResponse = await fetch(
         `${API_HOST}${API_ENDPOINTS.OBSERVATIONS}?${countParams}`
@@ -80,6 +86,10 @@ export const getQuizObservations = async (
         term_value_id: '18',
     });
 
+    if (placeId) {
+        observationParams.append('place_id', placeId);
+    }
+    
     const observationResponse = await fetch(
         `${API_HOST}${API_ENDPOINTS.OBSERVATIONS}?${observationParams}`
     );

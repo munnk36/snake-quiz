@@ -8,7 +8,9 @@ export default function AppRouter() {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/quiz" element={<QuizPage />} />
+                <Route path="/quiz/place/:placeId" element={<QuizPage />} />
                 <Route path="/quiz/:quizId" element={<QuizPage />} />
+                <Route path="/quiz/:quizId/:placeId" element={<QuizPage />} />
             </Routes>
         </BrowserRouter>
     );

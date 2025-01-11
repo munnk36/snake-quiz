@@ -15,7 +15,7 @@ export default function ObservationImage({
   observer,
   observationId,
   license,
-  size = 400,
+  size = 600,
 }: Props) {
   return (
     <div
