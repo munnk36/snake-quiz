@@ -1,5 +1,7 @@
+
 import { useState } from 'react';
-import { usePlacesSearch } from './hooks';
+import { Place, usePlacesSearch } from './hooks';
+import styles from './styles.module.scss'
 
 interface Props {
     onPlaceSelect: (placeId: string) => void;
@@ -15,27 +17,48 @@ export default function PlaceSearch({ onPlaceSelect }: Props) {
         searchPlaces(value);
     };
 
+    const handlePlaceSelect = (place: Place) => {
+        onPlaceSelect(place.id.toString());
+        setSearchTerm(place.display_name);
+    };
+
     return (
-        <div className="relative">
+        <div className={styles.searchContainer}>
             <input
                 type="text"
                 value={searchTerm}
                 onChange={handleInputChange}
-                placeholder="Search for a region..."
-                className="w-full p-2 border rounded"
+                placeholder="Search for a region (e.g., 'Argentina', 'Brazil')"
+                className={styles.searchInput}
+                aria-label="Search places"
             />
-            {isLoading && <div className="mt-2">Loading...</div>}
-            {error && <div className="mt-2 text-red-500">{error.message}</div>}
-            {places.length > 0 && (
-                <ul className="absolute z-10 w-full mt-1 bg-white border rounded shadow-lg max-h-60 overflow-auto">
+            
+            {isLoading && (
+                <div className={styles.loadingState}>
+                    Searching places...
+                </div>
+            )}
+
+            {error && (
+                <div className={styles.errorState}>
+                    {error.message}
+                </div>
+            )}
+
+            {!isLoading && places.length > 0 && (
+                <ul className={styles.resultsList} role="listbox">
                     {places.map((place) => (
                         <li
                             key={place.id}
-                            onClick={() => {
-                                onPlaceSelect(place.id.toString());
-                                setSearchTerm(place.display_name);
+                            onClick={() => handlePlaceSelect(place)}
+                            className={styles.resultItem}
+                            role="option"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handlePlaceSelect(place);
+                                }
                             }}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
                         >
                             {place.display_name}
                         </li>

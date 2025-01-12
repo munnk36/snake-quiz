@@ -17,7 +17,7 @@ export default function HomePage() {
     return (
         <div className={styles.container}>
             <header className={styles.header}>
-                <h1 className={styles.title}>Snake ID Quiz</h1>
+                <h1 className={styles.title}>Scale Scout</h1>
                 <p className={styles.subtitle}>
                     Test your knowledge of snake species! Use real observations from iNaturalist
                     to learn about snakes in your area.
