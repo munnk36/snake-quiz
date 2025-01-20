@@ -7,8 +7,6 @@ A snake identification quiz game using real observations from iNaturalist.
 ## Features
 
 - Quiz yourself on snake identification using real wildlife observations
-- Dynamic scoring system based on your answers
-- High-quality images from iNaturalist's database
 - Shareable quiz links - send the same quiz to friends
 - Zoom-capable images for detailed scale pattern examination
 - Educational content with both common and scientific names
@@ -19,7 +17,7 @@ A snake identification quiz game using real observations from iNaturalist.
 
 1. Start a new quiz session
 2. Examine the snake photograph carefully (use zoom for details)
-3. Choose from multiple possible species
+3. Choose from multiple choice!
 4. Learn from correct/incorrect answers
 5. Share your quiz with friends using the link
 
@@ -30,6 +28,7 @@ A snake identification quiz game using real observations from iNaturalist.
 - Some image quality may vary based on original observations
 - Should be filtering out anything that is dead, but sometimes these are not properly categorized
 - Location Guess text is not always useful or specific enough
+- Not sure if link's quiz id won't regenerate the same quiz if enough new data has been added to iNaturalist's db
 
 ## Planned Features
 
