@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Place, usePlacesSearch } from './hooks';
-import styles from './styles.module.scss'
+import styles from './styles.module.css'
 
 interface Props {
     onPlaceSelect: (placeId: string) => void;

@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from '../../../services/api/constants';
+import { V1_ENDPOINTS } from '../../../services/api/constants';
 import styles from './styles.module.css'
 
 interface Props {
@@ -20,7 +20,7 @@ export default function PhotoAttribution({
             <span className={styles.observer}>{observer}</span>
             <span className={styles.separator}>on</span>
             <a
-                href={`https://www.inaturalist.org${API_ENDPOINTS.OBSERVATIONS}/${observationId}`}
+                href={`https://www.inaturalist.org${V1_ENDPOINTS.OBSERVATIONS}/${observationId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}

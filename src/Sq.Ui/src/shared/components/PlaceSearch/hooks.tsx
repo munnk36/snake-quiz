@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { debounce } from '../../utils/debounce';
-import { API_ENDPOINTS, API_HOST } from '../../../services/api/constants';
+import { V1_ENDPOINTS, INATURALIST_API } from '../../../services/api/constants';
 
 export interface Place {
     id: number;
@@ -34,7 +34,7 @@ export function usePlacesSearch(): UsePlacesSearchResult {
 
                 try {
                     const response = await fetch(
-                        `${API_HOST}${API_ENDPOINTS.PLACES.AUTOCOMPLETE}?q=${encodeURIComponent(searchQuery)}`
+                        `${INATURALIST_API.V1}${V1_ENDPOINTS.PLACES.AUTOCOMPLETE}?q=${encodeURIComponent(searchQuery)}`
                     );
                     
                     if (!response.ok) {

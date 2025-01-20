@@ -1,0 +1,271 @@
+.quiz-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.option-button {
+    padding: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+}
+
+.quiz-complete {
+    text-align: center;
+    padding: 20px;
+
+    .answers-review {
+        margin: 20px 0;
+        text-align: left;
+
+        .answer-review {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+
+            &.correct {
+                background: #dcfce7;
+            }
+
+            &.incorrect {
+                background: #fee2e2;
+            }
+        }
+    }
+}
+
+.quiz-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #272f3a;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover:not(.disabled) {
+        background: #5c5c5c;
+        border-color: #94a3b8;
+        transform: translateY(-1px);
+    }
+
+    &.selected {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    &.disabled {
+        cursor: default;
+        opacity: 0.7;
+    }
+
+    &.correct {
+        border-color: #22c55e;
+        background: #52725c;
+    }
+
+    &.incorrect {
+        border-color: #ef4444;
+        background: #6e3232;
+    }
+
+    .quiz-option-content {
+        flex: 1;
+
+        .common-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #eaedf1;
+            margin-bottom: 0.25rem;
+        }
+
+        .scientific-name {
+            font-size: 0.9rem;
+            color: #dee1e4;
+        }
+    }
+
+    .result-icon {
+        margin-left: 1rem;
+        font-size: 1.25rem;
+        
+        .correct & {
+            color: #2d864e;
+        }
+        
+        .incorrect & {
+            color: #812222;
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    &.selected:not(.disabled) {
+        animation: pulse 0.3s ease-in-out;
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.scoreCard {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    text-align: center;
+
+    h2 {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: #1e293b;
+    }
+}
+
+.scoreDisplay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+
+    .score {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #3b82f6;
+    }
+
+    .percentage {
+        font-size: 2rem;
+        color: #64748b;
+    }
+}
+
+.answersGrid {display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 1rem; 
+    padding: 1rem;
+}
+
+.answerCard {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1);
+
+    &.correct {
+        border-left: 4px solid #22c55e;
+    }
+
+    &.incorrect {
+        border-left: 4px solid #ef4444;
+    }
+}
+
+.questionNumber {
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 1rem;
+}
+
+.imageContainer {
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.answerDetails {
+    h4 {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.userAnswer, .correctAnswer {
+    margin-bottom: 1rem;
+
+    .commonName {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #1e293b;
+    }
+
+    .scientificName {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+}
+
+.resultIcon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+
+    .correct & {
+        color: #22c55e;
+    }
+
+    .incorrect & {
+        color: #ef4444;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .scoreDisplay {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .answersGrid {
+        grid-template-columns: 1fr;
+    }
+}

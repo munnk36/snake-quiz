@@ -1,33 +1,7 @@
 import seedrandom from 'seedrandom';
 import { COMMERCIAL_SAFE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
-import { API_ENDPOINTS, API_HOST, SERPENTES_TAXON_ID } from "./constants";
-
-export interface ObservationPhoto {
-    url: string;
-    attribution: string;
-}
-
-export interface Observation {
-    id: number;
-    species_guess: string;
-    photos: ObservationPhoto[];
-    place_guess: string;
-    user: {
-        login: string;
-        name: string;
-    };
-    license_code: string;
-}
-
-export interface ObservationResponse {
-    total_results: number;
-    results: Observation[];
-}
-
-export interface QuizData {
-    quizId: string;
-    observations: Observation[];
-}
+import { V1_ENDPOINTS, INATURALIST_API, SERPENTES_TAXON_ID } from "./constants";
+import { ObservationResponse, QuizData } from './typeDefs';
 
 export async function getQuizObservations (
     numberOfObservations: number,
@@ -54,7 +28,7 @@ export async function getQuizObservations (
     }
 
     const countResponse = await fetch(
-        `${API_HOST}${API_ENDPOINTS.OBSERVATIONS}?${countParams}`
+        `${INATURALIST_API.V1}${V1_ENDPOINTS.OBSERVATIONS}?${countParams}`
     );
 
     if (!countResponse.ok) {
@@ -63,17 +37,14 @@ export async function getQuizObservations (
 
     const countData: ObservationResponse = await countResponse.json();
     
-    // Calculate max page while respecting the 10000 record limit
     const maxRecords = 10000;
     const maxPage = Math.min(
         Math.floor(maxRecords / numberOfObservations),
         Math.floor(countData.total_results / numberOfObservations)
     );
     
-    // Get our seeded random page
     const randomPage = Math.floor(rng() * maxPage) + 1;
 
-    // Fetch our actual observations
     const observationParams = new URLSearchParams({
         taxon_id: SERPENTES_TAXON_ID.toString(),
         quality_grade: 'research',
@@ -91,7 +62,7 @@ export async function getQuizObservations (
     }
     
     const observationResponse = await fetch(
-        `${API_HOST}${API_ENDPOINTS.OBSERVATIONS}?${observationParams}`
+        `${INATURALIST_API.V1}${V1_ENDPOINTS.OBSERVATIONS}?${observationParams}`
     );
 
     if (!observationResponse.ok) {
