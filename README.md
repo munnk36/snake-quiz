@@ -23,12 +23,17 @@ A snake identification quiz game using real observations from iNaturalist.
 
 ## Known Issues
 
+### Won't Fix
+
 - Taxonomy/species names are only as accurate as iNaturalist's database
-- Quiz options may break when encountering certain some observations
-  - e.g. Pantherophis "black rat complex" due to weird taxonomy usually breaks the quiz question
 - Some image quality may vary based on original observations
 - Should be filtering out anything that is dead, but sometimes these are not properly categorized
 - Location Guess text is not always useful or specific enough
+
+### Planned Fix
+
+- Quiz options may break when encountering certain some observations
+  - e.g. Pantherophis "black rat complex" due to weird taxonomy usually breaks the quiz question
 - Not sure if link's quiz id won't regenerate the same quiz if enough new data has been added to iNaturalist's db
 
 ## Planned Features
@@ -38,7 +43,7 @@ A snake identification quiz game using real observations from iNaturalist.
 - Show additional photos for each guess, if there are any
 - Quiz modes dedicated to specific, frequently confused species
   - e.g. a Cotton-Water mode (is it a cottonmouth or a watersnake???)
-- HARD mode, you must type in the full scientific name isntead of multi choice
+- HARD mode, you must type in the full scientific name instead of multi choice
 - Mapped coordinates are shown for each question
 
 ## Contributing
