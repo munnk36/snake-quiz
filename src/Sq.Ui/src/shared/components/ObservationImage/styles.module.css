@@ -1,36 +1,110 @@
-.imageContainer {
-    position: relative;
+.imageWrapper {
     width: 100%;
-    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 0 auto;
+    padding: 1rem;
+}
+
+.imageContainer {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 4/3;
+    position: relative;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: zoom-in;
+    background: rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    margin: 0 auto;
+
+    &:hover {
+        transform: scale(1.02);
+    }
 }
 
 .image {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
-}
-
-.attribution {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-}
-
-.container {
-    position: relative;
-    overflow: hidden;
-    background-color: #f0f0f0;
-}
-
-.image {
-    position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
+}
+
+
+.zoomHint {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    .imageContainer:hover & {
+        opacity: 1;
+    }
+}
+
+.zoomOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.zoomedImageContainer {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.zoomedImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@media (max-width: 640px) {
+    .imageContainer {
+        border-radius: 8px;
+    }
+
+    .zoomHint {
+        display: none;
+    }
 }

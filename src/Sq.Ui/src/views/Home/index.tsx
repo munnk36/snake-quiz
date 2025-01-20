@@ -33,6 +33,27 @@ export default function HomePage() {
                     Start Quiz
                 </button>
             </header>
+            <footer className={styles.footer}>
+                <div className={styles.footerLinks}>
+                    <a 
+                        href="https://github.com/munnk36/snake-quiz" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={styles.footerLink}
+                    >
+                        View on GitHub
+                    </a>
+                    <span className={styles.divider}>•</span>
+                    <a 
+                        href="https://www.inaturalist.org" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={styles.footerLink}
+                    >
+                        Powered by iNaturalist
+                    </a>
+                </div>
+            </footer>
         </div>
     );
 };

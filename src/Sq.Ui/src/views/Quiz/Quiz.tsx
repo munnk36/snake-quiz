@@ -63,11 +63,12 @@ export default function QuizPage({observations}: Props) {
                 <div>Question {quizState.currentQuestionIndex + 1} of {observations.length}</div>
                 <div>Score: {quizState.score}</div>
             </div>
-
-            <QuizQuestion
-                observation={observations[quizState.currentQuestionIndex]}
-                onAnswer={handleAnswer}
-            />
+            <div className={styles['quiz-question']}>
+                <QuizQuestion
+                    observation={observations[quizState.currentQuestionIndex]}
+                    onAnswer={handleAnswer}
+                />
+            </div>
         </div>
     );
 };

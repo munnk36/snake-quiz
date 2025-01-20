@@ -24,11 +24,14 @@ export default function PlaceSearch({ onPlaceSelect }: Props) {
 
     return (
         <div className={styles.searchContainer}>
+            <label className={styles.searchLabel}>
+                <span className={styles.searchHint}>Filter by Region (Optional)</span>
+            </label>
             <input
                 type="text"
                 value={searchTerm}
                 onChange={handleInputChange}
-                placeholder="Search for a region (e.g., 'Argentina', 'Brazil')"
+                placeholder="e.g. Argentina or New York..."
                 className={styles.searchInput}
                 aria-label="Search places"
             />

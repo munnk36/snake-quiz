@@ -2,64 +2,66 @@
     position: relative;
     width: 100%;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
 }
 
 .searchInput {
     width: 100%;
-    padding: 12px 16px;
+    padding: 0.75rem 1rem;
     font-size: 16px;
+    /* Keep 16px to prevent zoom on mobile */
     border: 2px solid #e2e8f0;
     border-radius: 8px;
-    transition: border-color 0.2s ease;
-
-    &:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
+    background: rgba(255, 255, 255, 0.9);
+    color: #38262c;
 }
 
 .resultsList {
     position: absolute;
-    z-index: 10;
-    width: 100%;
-    margin-top: 4px;
-    background: #38262c;
-    border: 1px solid #e2e8f0;
+    top: 100%;
+    left: 1rem;
+    right: 1rem;
+    background: rgba(56, 38, 44, 0.95);
+    border: 1px solid rgba(226, 232, 240, 0.1);
     border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-                0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    max-height: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 40vh;
     overflow-y: auto;
-    list-style: none;
-    padding: 0;
-    margin: 4px 0 0 0;
+    z-index: 1000;
 }
 
 .resultItem {
-    padding: 12px 16px;
+    padding: 0.75rem 1rem;
     cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
-
-    &:last-child {
-        border-bottom: none;
-    }
-
-    &:hover {
-        background-color: #415168 ;
-    }
+    border-bottom: 1px solid rgba(241, 245, 249, 0.1);
+    color: #ffffff;
 }
 
-.loadingState {
-    padding: 12px 16px;
-    color: #64748b;
-    text-align: center;
-    font-style: italic;
+.searchLabel {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.5rem;
 }
 
-.errorState {
-    padding: 12px 16px;
-    color: #ef4444;
-    text-align: center;
+.searchHint {
+    display: block;
+    font-size: 0.875rem;
+    color: #cccccc;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0.5rem;
+    }
+
+    .searchContainer {
+        padding: 0 0.5rem;
+    }
+
+    .startButton {
+        min-width: 160px;
+        padding: 0.6rem 1.5rem;
+    }
 }
