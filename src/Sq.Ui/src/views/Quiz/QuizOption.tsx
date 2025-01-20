@@ -23,10 +23,16 @@ export default function QuizOption({
     };
 
     const getStatusClass = () => {
-        if (!showResult) return '';
-        if (!isSelected) return '';
-        return option.isCorrect ? styles.correct : styles.incorrect;
+        if (showResult && isSelected) {
+            return option.isCorrect ? styles.correct : styles.incorrect;
+        }
+        if (showResult && option.isCorrect) {
+            return styles.correct;
+        }
+        return '';
     };
+
+    const showResultIcon = showResult && (isSelected || option.isCorrect);
 
     return (
         <button
@@ -50,8 +56,11 @@ export default function QuizOption({
                 </div>
             </div>
 
-            {showResult && isSelected && (
-                <div className={styles['result-icon']} aria-hidden="true">
+            {showResultIcon && (
+                <div 
+                    className={styles['resultIcon']}
+                    aria-hidden="true"
+                >
                     {option.isCorrect ? '✓' : '✕'}
                 </div>
             )}

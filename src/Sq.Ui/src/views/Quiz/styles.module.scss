@@ -109,6 +109,18 @@
         transform: translateY(-2px);
     }
 
+    &.correct {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: #22c55e;
+        pointer-events: none;
+    }
+
+    &.incorrect {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+        pointer-events: none;
+    }
+
     .quiz-option-content {
         flex: 1;
         

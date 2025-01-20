@@ -10,7 +10,7 @@ import styles from './styles.module.scss';
 interface Props {
     observation: Observation;
     onAnswer: (
-        selectedTaxonId: number, 
+        selectedTaxonId: number,
         isCorrect: boolean,
         userAnswer: {
             preferredCommonName: string;
@@ -19,7 +19,7 @@ interface Props {
     ) => void;
 }
 
-export default function QuizQuestion({observation, onAnswer}: Props) {
+export default function QuizQuestion({ observation, onAnswer }: Props) {
     const {
         quizOptions,
         isLoading: optionsLoading,
@@ -28,7 +28,7 @@ export default function QuizQuestion({observation, onAnswer}: Props) {
 
     const [selectedOption, setSelectedOption] = useState<QuizGuessOption | null>(null);
     const [showResults, setShowResults] = useState(false);
-    
+
     useEffect(() => {
         setSelectedOption(null);
         setShowResults(false);
@@ -37,13 +37,13 @@ export default function QuizQuestion({observation, onAnswer}: Props) {
 
     const handleSelect = (option: QuizGuessOption) => {
         if (selectedOption) return;
-        
+
         setSelectedOption(option);
         setShowResults(true);
-        
+
         setTimeout(() => {
             onAnswer(
-                option.taxonId, 
+                option.taxonId,
                 option.isCorrect,
                 {
                     preferredCommonName: option.preferredCommonName,
@@ -52,7 +52,7 @@ export default function QuizQuestion({observation, onAnswer}: Props) {
             );
         }, 1500);
     };
-    
+
     if (optionsLoading) {
         return <div>Loading question options...</div>;
     }
@@ -70,9 +70,9 @@ export default function QuizQuestion({observation, onAnswer}: Props) {
                 license={observation.license_code}
             />
             <div className={styles['location-info']}>{observation.place_guess}</div>
-            
+
             <div className={styles['options-grid']}>
-            {quizOptions.map((option) => (
+                {quizOptions.map((option) => (
                     <QuizOption
                         key={option.taxonId}
                         option={option}
