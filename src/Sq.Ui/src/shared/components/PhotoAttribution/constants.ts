@@ -6,5 +6,7 @@
 
 export const COMMERCIAL_SAFE_LICENSES = [
     'CC-BY',        // Can use with attribution
-    'CC-BY-SA'      // Can use with attribution + share alike
+    'CC-BY-SA',     // Can use with attribution + share alike
+    'CC-BY-ND',
 ];
+

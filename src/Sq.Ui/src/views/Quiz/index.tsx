@@ -1,25 +1,45 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import useQuizObservations from '../../services/api/hooks';
 import Quiz from './Quiz';
 
 export default function QuizPage() {
-    const { quizId, placeId } = useParams();
+    const [searchParams] = useSearchParams();
+    const placeId = searchParams.get('place');
+    const quizId = searchParams.get('id');
     const navigate = useNavigate();
     const { 
         data, 
         isLoading, 
         error 
-    } = useQuizObservations(10, quizId, placeId);
-
+    } = useQuizObservations(10, quizId || '', placeId || '');
+    
     useEffect(() => {
         if (!data || error) return;
-
-        if (location.pathname.startsWith('/quiz/place/') && placeId) {
-            navigate(`/quiz/${data.quizId}/${placeId}`, { replace: true });
+    
+        const needsRedirect = data.quizId && (
+            !quizId ||
+            quizId !== data.quizId
+        );
+    
+        if (needsRedirect) {
+            const newParams = new URLSearchParams();
+            newParams.set('id', data.quizId);
+            
+            if (placeId) {
+                newParams.set('place', placeId);
+            }
+    
+            navigate({
+                pathname: '/quiz',
+                search: `?${newParams.toString()}`
+            }, { 
+                replace: true,
+                state: { canonicalRedirect: true }
+            });
         }
-    }, [placeId, navigate, data, error]);
-
+    }, [data, quizId, placeId, navigate, error]);
+    
     if (isLoading) {
         return <div>Loading quiz...</div>;
     }

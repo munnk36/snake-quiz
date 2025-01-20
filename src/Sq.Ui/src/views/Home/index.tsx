@@ -8,7 +8,10 @@ export default function HomePage() {
 
     const startQuiz = (placeId?: string) => {
         if (placeId) {
-            navigate(`/quiz/place/${placeId}`);
+            navigate({
+                pathname: '/quiz',
+                search: `?place=${placeId}`
+            });
         } else {
             navigate('/quiz');
         }

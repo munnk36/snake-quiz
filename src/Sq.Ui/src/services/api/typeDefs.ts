@@ -14,9 +14,11 @@ export interface Observation {
         name: string;
     };
     taxon: {
+        min_species_ancestry: string;
         min_species_taxon_id: number;
         name: string;
         preferred_common_name: string;
+        rank: string;
     };
     license_code: string;
 }

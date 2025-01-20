@@ -2,13 +2,14 @@ export const V1_ENDPOINTS = {
     OBSERVATIONS: '/observations',
     PLACES: {
         AUTOCOMPLETE: '/places/autocomplete',
-    }
+    },
+    TAXA: '/taxa',
 }
 
 export const V2_ENDPOINTS = {
     IDENTIFICATIONS: {
-        SIMILAR_SPECIES: '/identifications/similar_species'
-    }
+        SIMILAR_SPECIES: '/identifications/similar_species',
+    },
 }
 
 export const SERPENTES_TAXON_ID = 85553;

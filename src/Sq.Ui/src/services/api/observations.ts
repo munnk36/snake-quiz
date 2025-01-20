@@ -1,5 +1,5 @@
 import seedrandom from 'seedrandom';
-import { COMMERCIAL_SAFE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
+// import { COMMERCIAL_SAFE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
 import { V1_ENDPOINTS, INATURALIST_API, SERPENTES_TAXON_ID } from "./constants";
 import { ObservationResponse, QuizData } from './typeDefs';
 
@@ -18,7 +18,7 @@ export async function getQuizObservations (
         photos: 'true',
         per_page: '1',
         verifiable: 'true',
-        photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
+        // photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
         term_id: '17',
         term_value_id: '18,20', //only show live animals
     });
@@ -53,8 +53,9 @@ export async function getQuizObservations (
         page: randomPage.toString(),
         order: 'random',
         verifiable: 'true',
-        photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
-        term_value_id: '18',
+        // photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
+        term_id: '17',
+        term_value_id: '18,20',
     });
 
     if (placeId) {
@@ -71,8 +72,47 @@ export async function getQuizObservations (
 
     const observationData: ObservationResponse = await observationResponse.json();
 
+    const processedObservations = await Promise.all(
+        observationData.results.map(async (observation) => {
+            if (observation.taxon.rank === 'species') {
+                return observation;
+            }
+
+            //if our observation we need to back it out to the species level. (otherwise, users will always be able to know it's the subspecies)
+            if (observation.taxon.rank === 'subspecies' && observation.taxon.min_species_taxon_id) {
+                try {
+                    const speciesResponse = await fetch(
+                        `${INATURALIST_API.V1}${V1_ENDPOINTS.TAXA}/${observation.taxon.min_species_taxon_id}`
+                    );
+
+                    if (!speciesResponse.ok) {
+                        throw new Error('Failed to fetch species data');
+                    }
+
+                    const speciesData = await speciesResponse.json();
+                    const speciesTaxon = speciesData.results[0];
+
+                    return {
+                        ...observation,
+                        taxon: {
+                            ...observation.taxon,
+                            name: speciesTaxon.name,
+                            preferred_common_name: speciesTaxon.preferred_common_name,
+                            rank: 'species'
+                        }
+                    };
+                } catch (error) {
+                    console.error('Error fetching species data:', error);
+                    return observation; // Fallback to original observation if fetch fails
+                }
+            }
+
+            return observation;
+        })
+    );
+
     return {
         quizId: generatedQuizId,
-        observations: observationData.results
+        observations: processedObservations,
     };
 };
