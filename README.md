@@ -24,7 +24,8 @@ A snake identification quiz game using real observations from iNaturalist.
 ## Known Issues
 
 - Taxonomy/species names are only as accurate as iNaturalist's database
-- Quiz options may break when encountering certain some observations Pantherophis "black rat complex" due to weird taxonomy
+- Quiz options may break when encountering certain some observations
+  - e.g. Pantherophis "black rat complex" due to weird taxonomy usually breaks the quiz question
 - Some image quality may vary based on original observations
 - Should be filtering out anything that is dead, but sometimes these are not properly categorized
 - Location Guess text is not always useful or specific enough
