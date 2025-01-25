@@ -10,97 +10,90 @@ interface Props {
   observationId: number;
   license: string;
 }
+const MAX_HEIGHT_VH = 40;
 
 export default function ObservationImage({
   imageUrl,
   observer,
   observationId,
   license,
-}: Props) {
+}: Props) {    
   const [isZoomed, setIsZoomed] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(0);
+  const [isPortrait, setIsPortrait] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Calculate maximum height based on viewport
   useEffect(() => {
-      const calculateMaxHeight = () => {
-          if (!containerRef.current) return;
-          
-          const viewportHeight = window.innerHeight;
-          const containerTop = containerRef.current.getBoundingClientRect().top;
-          const padding = 40; // Space for attribution and padding
-          
-          setMaxHeight(viewportHeight - containerTop - padding);
-      };
-
-      calculateMaxHeight();
-      window.addEventListener('resize', calculateMaxHeight);
-      
-      return () => window.removeEventListener('resize', calculateMaxHeight);
+      // Set max-height CSS property on the container
+      if (containerRef.current) {
+          containerRef.current.style.maxHeight = `${MAX_HEIGHT_VH}vh`;
+      }
   }, []);
 
-  return (
-      <>
-          <div 
-              ref={containerRef}
-              className={styles.imageWrapper}
-              style={{ maxHeight: `${maxHeight}px` }}
-          >
-              <div 
-                  className={styles.imageContainer}
-                  onClick={() => setIsZoomed(true)}
-              >
-                  {imageUrl && (
-                      <img
-                          src={imageUrl}
-                          alt='Mystery Snake'
-                          className={styles.image}
-                          loading="lazy"
-                      />
-                  )}
-                  <PhotoAttribution
-                      observer={observer}
-                      observationId={observationId}
-                      license={license}
-                      className={styles.attribution}
-                  />
-                  <div className={styles.zoomHint}>
-                      <span>🔍 Tap to zoom</span>
-                  </div>
-              </div>
-          </div>
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const img = e.target as HTMLImageElement;
+      setIsPortrait(img.naturalHeight > img.naturalWidth);
+  };
 
-          {/* Zoom Modal */}
-          <AnimatePresence>
-              {isZoomed && (
-                  <motion.div 
-                      className={styles.zoomOverlay}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      onClick={() => setIsZoomed(false)}
-                  >
-                      <motion.div 
-                          className={styles.zoomedImageContainer}
-                          initial={{ scale: 0.5 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0.5 }}
-                      >
-                          <img
-                              src={imageUrl}
-                              alt='Mystery Snake (Zoomed)'
-                              className={styles.zoomedImage}
-                          />
-                          <button 
-                              className={styles.closeButton}
-                              onClick={() => setIsZoomed(false)}
-                          >
-                              ✕
-                          </button>
-                      </motion.div>
-                  </motion.div>
-              )}
-          </AnimatePresence>
-      </>
+
+  return (
+    <div className={styles.imageWrapper}>
+      <div
+        ref={containerRef}
+        className={`${styles.imageContainer} ${isPortrait ? styles.imageContainerPortrait : ''
+          }`}
+        onClick={() => setIsZoomed(true)}
+      >
+        <img
+          src={imageUrl}
+          alt='Mystery Snake'
+          className={styles.image}
+          loading="lazy"
+          onLoad={handleImageLoad}
+        />
+        <div className={styles.attributionWrapper}>
+          <PhotoAttribution
+            observer={observer}
+            observationId={observationId}
+            license={license}
+            className={styles.attribution}
+          />
+        </div>
+        <div className={styles.zoomHint}>
+          <span>🔍 Tap to zoom</span>
+        </div>
+      </div>
+
+      {/* Zoom Modal */}
+      <AnimatePresence>
+        {isZoomed && (
+          <motion.div
+            className={styles.zoomOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsZoomed(false)}
+          >
+            <motion.div
+              className={styles.zoomedImageContainer}
+              initial={{ scale: 0.5 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.5 }}
+            >
+              <img
+                src={imageUrl}
+                alt='Mystery Snake (Zoomed)'
+                className={styles.zoomedImage}
+              />
+              <button
+                className={styles.closeButton}
+                onClick={() => setIsZoomed(false)}
+              >
+                ✕
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };

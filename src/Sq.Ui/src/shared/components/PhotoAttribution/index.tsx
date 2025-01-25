@@ -27,7 +27,9 @@ export default function PhotoAttribution({
             >
                 iNaturalist
             </a>
-            <span className={styles.license}>({license})</span>
+            {license &&
+                <span className={styles.license}>({license})</span>
+            }
         </div>
     );
 } 
