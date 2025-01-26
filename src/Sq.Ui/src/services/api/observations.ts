@@ -78,6 +78,31 @@ export async function getQuizObservations (
                 return observation;
             }
 
+            if ((observation.taxon.rank === 'complex' || observation.taxon.rank === 'hybrid') &&
+                observation.taxon.min_species_taxon_id) {
+                try {
+                    const speciesResponse = await fetch(
+                        `${INATURALIST_API.V1}${V1_ENDPOINTS.TAXA}/${observation.taxon.min_species_taxon_id}`
+                    );
+
+                    if (!speciesResponse.ok) {
+                        throw new Error('Failed to fetch species data');
+                    }
+
+                    const taxonData = await speciesResponse.json();
+                    return {
+                        ...observation,
+                        taxon: {
+                            ...observation.taxon,
+                            children: taxonData.results[0].children,
+                        }
+                    };
+                } catch (error) {
+                    console.error('Error fetching species data:', error);
+                    return observation; // Fallback to original observation if fetch fails
+                }
+            }
+
             //if our observation we need to back it out to the species level. (otherwise, users will always be able to know it's the subspecies)
             if (observation.taxon.rank === 'subspecies' && observation.taxon.min_species_taxon_id) {
                 try {
@@ -89,15 +114,14 @@ export async function getQuizObservations (
                         throw new Error('Failed to fetch species data');
                     }
 
-                    const speciesData = await speciesResponse.json();
-                    const speciesTaxon = speciesData.results[0];
+                    const taxonData = await speciesResponse.json();
 
                     return {
                         ...observation,
                         taxon: {
                             ...observation.taxon,
-                            name: speciesTaxon.name,
-                            preferred_common_name: speciesTaxon.preferred_common_name,
+                            name: taxonData.results[0].name,
+                            preferred_common_name: taxonData.results[0].preferred_common_name,
                             rank: 'species'
                         }
                     };

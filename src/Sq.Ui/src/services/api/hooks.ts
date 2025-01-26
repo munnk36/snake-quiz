@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { getQuizObservations } from './observations';
-import { Observation, QuizData, QuizGuessOption } from './typeDefs';
+import { Observation, QuizData, QuizGuessOption, Taxon } from './typeDefs';
 import { useEffect, useState } from 'react';
 import { getSimilarSpecies } from './similar';
 
@@ -22,12 +22,24 @@ export function useQuizMultipleChoiceOptions(observedSnake?: Observation, number
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
+    const getSimilarSpeciesId = (taxon: Taxon) => {
+        if (taxon.rank === 'complex' || taxon.rank === 'hybrid') {
+            if (taxon?.children?.length) {
+                return taxon.children[0].id
+            }
+        }
+        return taxon.min_species_taxon_id; //fallback
+    };
+    
+
     useEffect(() => {
         async function generateOptions() {
-            if (!observedSnake?.taxon?.min_species_taxon_id) return;
+            if (!observedSnake) return;
+            const speciesTaxonId = getSimilarSpeciesId(observedSnake.taxon)
+            if (!speciesTaxonId) return;
             setIsLoading(true);
             try {
-                const similarSpecies = await getSimilarSpecies(observedSnake.taxon.min_species_taxon_id);
+                const similarSpecies = await getSimilarSpecies(speciesTaxonId);
                 
                 const correctOption: QuizGuessOption = {
                     taxonId: observedSnake.taxon.min_species_taxon_id,
@@ -41,7 +53,10 @@ export function useQuizMultipleChoiceOptions(observedSnake?: Observation, number
                         result.taxon.is_active &&
                         !result.taxon.extinct &&
                         result.taxon.preferred_common_name &&
-                        result.taxon.id !== observedSnake.taxon.min_species_taxon_id
+                        result.taxon.id !== observedSnake.taxon.min_species_taxon_id &&
+                        !observedSnake.taxon.children?.some( //if it's a hybrid or complex, technically all children are 'correct'
+                            child => child.id === result.taxon.id
+                        )
                     )
                     .sort(() => Math.random() - 0.5)
                     .slice(0, numberOfOptions - 1)

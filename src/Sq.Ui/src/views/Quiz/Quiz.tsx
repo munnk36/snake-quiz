@@ -29,7 +29,7 @@ export default function QuizPage({observations}: Props) {
                 selectedTaxonId,
                 isCorrect,
                 correctAnswer: {
-                    preferredCommonName: currentObservation.taxon.preferred_common_name,
+                    preferredCommonName: currentObservation.taxon.preferred_common_name || '',
                     scientificName: currentObservation.taxon.name
                 },
                 userAnswer: {

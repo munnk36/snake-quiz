@@ -13,13 +13,7 @@ export interface Observation {
         login: string;
         name: string;
     };
-    taxon: {
-        min_species_ancestry: string;
-        min_species_taxon_id: number;
-        name: string;
-        preferred_common_name: string;
-        rank: string;
-    };
+    taxon: Taxon;
     license_code: string;
 }
 
@@ -41,8 +35,10 @@ export interface Taxon {
     extinct: boolean;
     iconic_taxon_name: string;
     is_active: boolean;
+    min_species_taxon_id: number;
     rank: string;
     rank_level: number;
+    children: Taxon[];
 }
 
 export interface SimilarSpeciesResult {
@@ -56,6 +52,7 @@ export interface SimilarSpeciesResponse {
     per_page: number;
     results: SimilarSpeciesResult[];
 }
+
 export interface QuizState {
     currentQuestionIndex: number;
     score: number;
