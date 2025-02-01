@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Observation, QuizAnswer, QuizState } from '../../services/api/typeDefs';
+import { Observation } from '../../services/api/typeDefs';
 import QuizQuestion from './QuizQuestion';
 import styles from './styles.module.scss'
 import QuizResults from './QuizResult';
 import { getMediumImageUrl } from '../../shared/utils/imageUtils';
+import { QuizState, QuizAnswer } from '../../shared/constants';
 
 interface Props {
     observations: Observation[];

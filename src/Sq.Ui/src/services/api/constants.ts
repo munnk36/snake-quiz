@@ -1,5 +1,6 @@
 export const V1_ENDPOINTS = {
     OBSERVATIONS: '/observations',
+    SPECIES_COUNT: '/observations/species_counts',
     PLACES: {
         AUTOCOMPLETE: '/places/autocomplete',
     },

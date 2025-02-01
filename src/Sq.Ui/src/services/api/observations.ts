@@ -1,9 +1,10 @@
 import seedrandom from 'seedrandom';
-// import { COMMERCIAL_SAFE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
+import { EDUCATIONAL_USE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
 import { V1_ENDPOINTS, INATURALIST_API, SERPENTES_TAXON_ID } from "./constants";
-import { ObservationResponse, QuizData } from './typeDefs';
+import { Observation, ObservationResponse, SpeciesCount } from './typeDefs';
+import { QuizData } from '../../shared/constants';
 
-export async function getQuizObservations (
+export async function getQuizObservationsV1 (
     numberOfObservations: number,
     quizId?: string,
     placeId?: string,
@@ -18,7 +19,7 @@ export async function getQuizObservations (
         photos: 'true',
         per_page: '1',
         verifiable: 'true',
-        // photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
+        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
         term_id: '17',
         term_value_id: '18,20', //only show live animals
     });
@@ -53,7 +54,7 @@ export async function getQuizObservations (
         page: randomPage.toString(),
         order: 'random',
         verifiable: 'true',
-        // photo_license: COMMERCIAL_SAFE_LICENSES.join(','),
+        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
         term_id: '17',
         term_value_id: '18,20',
     });
@@ -140,3 +141,209 @@ export async function getQuizObservations (
         observations: processedObservations,
     };
 };
+
+export async function getQuizObservations(
+    numberOfObservations: number,
+    quizId?: string,
+    placeId?: string,
+): Promise<QuizData> {
+    const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
+    const rng = seedrandom(generatedQuizId);
+
+    // 1. First get all species in the place
+    const speciesParams = new URLSearchParams({
+        verifiable: 'true',
+        identified: 'true',
+        captive: 'false',
+        native: 'true',
+        quality_grade: 'research',
+        taxon_id: SERPENTES_TAXON_ID.toString(),
+        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
+        photos: 'true',
+        term_id: '17',
+        term_value_id: '18,20', //only living organisms
+    });
+
+    if (placeId) {
+        speciesParams.append('place_id', placeId);
+    }
+
+    const speciesResponse = await fetch(
+        `${INATURALIST_API.V1}${V1_ENDPOINTS.SPECIES_COUNT}?${speciesParams}`
+    );
+    const speciesCountData = await speciesResponse.json();
+
+    // weighted distribution of counts of species
+    const speciesList = speciesCountData.results.map((result: SpeciesCount) => ({
+        id: result.taxon.id,
+        weight: Math.min(result.count, 1000) // Cap the weight to prevent over-representation
+    }));
+
+    // weighted random selection
+    const observations: Observation[] = [];
+    const speciesUsedCount: Record<number, number> = {};
+    const MAX_PER_SPECIES = 2;
+
+    while (observations.length < numberOfObservations) {
+        // Get random page for current species
+        const targetSpecies = weightedRandomSelect(speciesList, rng);
+        if (speciesUsedCount[targetSpecies.id] >= MAX_PER_SPECIES) {
+            continue;
+        }
+
+        // Fetch observation for this species
+        const obs = await getRandomObservationForSpecies(targetSpecies.id, rng, placeId);
+        if (obs) {
+            observations.push(obs);
+            speciesUsedCount[targetSpecies.id] = (speciesUsedCount[targetSpecies.id] || 0) + 1;
+        }
+    }
+
+    return {
+        quizId: generatedQuizId,
+        observations
+    };
+}
+
+function weightedRandomSelect(
+    items: Array<{ id: number; weight: number }>, 
+    rng: () => number
+) {
+    const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+    let random = rng() * totalWeight;
+    
+    for (const item of items) {
+        random -= item.weight;
+        if (random <= 0) {
+            return item;
+        }
+    }
+    return items[0];
+}
+
+async function getRandomObservationForSpecies(
+    targetSpeciesId: number,
+    rng: () => number,
+    placeId?: string
+): Promise<Observation | null> {
+    // First get total count for this species
+    const countParams = new URLSearchParams({
+        taxon_id: targetSpeciesId.toString(),
+        quality_grade: 'research',
+        photos: 'true',
+        verifiable: 'true',
+        identified: 'true',
+        native: 'true',
+        captive: 'false',
+        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
+        term_id: '17',
+        term_value_id: '18,20',
+        per_page: '1'
+    });
+
+    if (placeId) {
+        countParams.append('place_id', placeId);
+    }
+
+    const countResponse = await fetch(
+        `${INATURALIST_API.V1}${V1_ENDPOINTS.OBSERVATIONS}?${countParams}`
+    );
+
+    if (!countResponse.ok) {
+        console.error(`Failed to get count for species ${targetSpeciesId}`);
+        return null;
+    }
+
+    const countData = await countResponse.json();
+    if (countData.total_results === 0) {
+        return null;
+    }
+
+    // random page
+    const maxPage = Math.min(
+        Math.floor(10000 / 1), // API limit
+        countData.total_results
+    );
+    const randomPage = Math.floor(rng() * maxPage) + 1;
+
+    const observationParams = new URLSearchParams({
+        ...Object.fromEntries(countParams),
+        page: randomPage.toString(),
+        order: 'random'
+    });
+
+    const observationResponse = await fetch(
+        `${INATURALIST_API.V1}${V1_ENDPOINTS.OBSERVATIONS}?${observationParams}`
+    );
+
+    if (!observationResponse.ok) {
+        console.error(`Failed to fetch observation for species ${targetSpeciesId}`);
+        return null;
+    }
+
+    const observationData = await observationResponse.json();
+    if (!observationData.results?.[0]) {
+        return null;
+    }
+
+    // Process the observation
+    const observation = observationData.results[0];
+    
+    if (observation.taxon.rank === 'species') {
+        return observation;
+    }
+
+    if ((observation.taxon.rank === 'complex' || observation.taxon.rank === 'hybrid') &&
+        observation.taxon.min_species_taxon_id) {
+        try {
+            const speciesResponse = await fetch(
+                `${INATURALIST_API.V1}${V1_ENDPOINTS.TAXA}/${observation.taxon.min_species_taxon_id}`
+            );
+
+            if (!speciesResponse.ok) {
+                throw new Error('Failed to fetch species data');
+            }
+
+            const taxonData = await speciesResponse.json();
+            return {
+                ...observation,
+                taxon: {
+                    ...observation.taxon,
+                    children: taxonData.results[0].children,
+                }
+            };
+        } catch (error) {
+            console.error('Error fetching species data:', error);
+            return observation;
+        }
+    }
+
+    if (observation.taxon.rank === 'subspecies' && observation.taxon.min_species_taxon_id) {
+        try {
+            const speciesResponse = await fetch(
+                `${INATURALIST_API.V1}${V1_ENDPOINTS.TAXA}/${observation.taxon.min_species_taxon_id}`
+            );
+
+            if (!speciesResponse.ok) {
+                throw new Error('Failed to fetch species data');
+            }
+
+            const taxonData = await speciesResponse.json();
+
+            return {
+                ...observation,
+                taxon: {
+                    ...observation.taxon,
+                    name: taxonData.results[0].name,
+                    preferred_common_name: taxonData.results[0].preferred_common_name,
+                    rank: 'species'
+                }
+            };
+        } catch (error) {
+            console.error('Error fetching species data:', error);
+            return observation;
+        }
+    }
+
+    return observation;
+}

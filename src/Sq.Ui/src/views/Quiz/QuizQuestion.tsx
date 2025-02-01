@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useQuizMultipleChoiceOptions } from "../../services/api/hooks";
-import { Observation, QuizGuessOption } from "../../services/api/typeDefs";
+import { Observation } from "../../services/api/typeDefs";
 import { ObservationImage } from "../../shared/components";
 import { getLargeImageUrl } from "../../shared/utils/imageUtils";
 import QuizOption from "./QuizOption";
 import styles from './styles.module.scss';
+import { QuizGuessOption } from "../../shared/constants";
 
 
 interface Props {

@@ -5,8 +5,15 @@
 // Indicate the license type
 
 export const COMMERCIAL_SAFE_LICENSES = [
-    'CC-BY',        // Can use with attribution
-    'CC-BY-SA',     // Can use with attribution + share alike
+    'CC0',
+    'CC-BY',
+    'CC-BY-SA',
     'CC-BY-ND',
 ];
 
+export const EDUCATIONAL_USE_LICENSES = [
+    ...COMMERCIAL_SAFE_LICENSES,
+    'CC-BY-NC',
+    'CC-BY-NC-SA',
+    'CC-BY-NC-ND',
+];

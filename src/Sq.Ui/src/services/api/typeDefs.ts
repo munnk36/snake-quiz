@@ -22,11 +22,6 @@ export interface ObservationResponse {
     results: Observation[];
 }
 
-export interface QuizData {
-    quizId: string;
-    observations: Observation[];
-}
-
 export interface Taxon {
     id: number;
     name: string;
@@ -53,31 +48,7 @@ export interface SimilarSpeciesResponse {
     results: SimilarSpeciesResult[];
 }
 
-export interface QuizState {
-    currentQuestionIndex: number;
-    score: number;
-    answers: QuizAnswer[];
-}
-
-export interface QuizAnswer {
-    observationId: number;
-    selectedTaxonId: number;
-    isCorrect: boolean;
-    correctAnswer: {
-        preferredCommonName: string;
-        scientificName: string;
-    };
-    userAnswer: {
-        preferredCommonName: string;
-        scientificName: string;
-    };
-    observationImageUrl: string;
-
-}
-
-export interface QuizGuessOption {
-    taxonId: number;
-    scientificName: string;
-    preferredCommonName: string;
-    isCorrect: boolean;
+export interface SpeciesCount {
+    count: number;
+    taxon: Taxon;
 }

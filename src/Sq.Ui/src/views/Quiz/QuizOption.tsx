@@ -1,4 +1,4 @@
-import { QuizGuessOption } from '../../services/api/typeDefs';
+import { QuizGuessOption } from '../../shared/constants';
 import styles from './styles.module.scss';
 
 interface Props {

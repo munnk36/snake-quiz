@@ -1,4 +1,4 @@
-import { QuizAnswer } from '../../services/api/typeDefs';
+import { QuizAnswer } from '../../shared/constants';
 import styles from './styles.module.scss';
 
 interface Props {

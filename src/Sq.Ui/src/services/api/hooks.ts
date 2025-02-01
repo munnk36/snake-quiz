@@ -1,8 +1,9 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { getQuizObservations } from './observations';
-import { Observation, QuizData, QuizGuessOption, Taxon } from './typeDefs';
+import { Observation, Taxon } from './typeDefs';
 import { useEffect, useState } from 'react';
 import { getSimilarSpecies } from './similar';
+import { QuizData, QuizGuessOption } from '../../shared/constants';
 
 export default function useQuizObservations(
     numberOfObservations: number = 10,
