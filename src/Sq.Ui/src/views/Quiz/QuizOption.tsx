@@ -1,13 +1,5 @@
-import { QuizGuessOption } from '../../shared/constants';
 import styles from './styles.module.scss';
-
-interface Props {
-    option: QuizGuessOption;
-    onSelect: (option: QuizGuessOption) => void;
-    disabled?: boolean;
-    isSelected?: boolean;
-    showResult?: boolean;
-}
+import { QuizOptionProps } from './types';
 
 export default function QuizOption({
     option,
@@ -15,7 +7,7 @@ export default function QuizOption({
     disabled = false,
     isSelected = false,
     showResult = false,
-}: Props) {
+}: QuizOptionProps) {
     const handleClick = () => {
         if (!disabled) {
             onSelect(option);
@@ -36,12 +28,12 @@ export default function QuizOption({
 
     return (
         <button
-        className={`
-            ${styles['quiz-option']}
-            ${isSelected ? styles.selected : ''}
-            ${getStatusClass()}
-            ${disabled ? styles.disabled : ''}
-        `}
+            className={`
+                ${styles['quiz-option']}
+                ${isSelected ? styles.selected : ''}
+                ${getStatusClass()}
+                ${disabled ? styles.disabled : ''}
+            `}
             onClick={handleClick}
             disabled={disabled}
             type="button"
@@ -66,4 +58,4 @@ export default function QuizOption({
             )}
         </button>
     );
-};
+}

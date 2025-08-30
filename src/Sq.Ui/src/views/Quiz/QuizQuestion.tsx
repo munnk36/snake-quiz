@@ -1,26 +1,13 @@
 import { useEffect, useState } from "react";
 import { useQuizMultipleChoiceOptions } from "../../services/api/hooks";
-import { Observation } from "../../services/api/typeDefs";
 import { ObservationImage } from "../../shared/components";
 import { getLargeImageUrl } from "../../shared/utils/imageUtils";
+import { QuizGuessOption } from "../../shared/constants";
 import QuizOption from "./QuizOption";
 import styles from './styles.module.scss';
-import { QuizGuessOption } from "../../shared/constants";
+import { QuizQuestionProps } from './types';
 
-
-interface Props {
-    observation: Observation;
-    onAnswer: (
-        selectedTaxonId: number,
-        isCorrect: boolean,
-        userAnswer: {
-            preferredCommonName: string;
-            scientificName: string;
-        }
-    ) => void;
-}
-
-export default function QuizQuestion({ observation, onAnswer }: Props) {
+export default function QuizQuestion({ observation, onAnswer }: QuizQuestionProps) {
     const {
         quizOptions,
         isLoading: optionsLoading,
@@ -30,11 +17,11 @@ export default function QuizQuestion({ observation, onAnswer }: Props) {
     const [selectedOption, setSelectedOption] = useState<QuizGuessOption | null>(null);
     const [showResults, setShowResults] = useState(false);
 
+    // Reset state when observation changes
     useEffect(() => {
         setSelectedOption(null);
         setShowResults(false);
     }, [observation.id]);
-
 
     const handleSelect = (option: QuizGuessOption) => {
         if (selectedOption) return;
@@ -42,6 +29,7 @@ export default function QuizQuestion({ observation, onAnswer }: Props) {
         setSelectedOption(option);
         setShowResults(true);
 
+        // Delay to show the result before moving to next question
         setTimeout(() => {
             onAnswer(
                 option.taxonId,
@@ -70,7 +58,10 @@ export default function QuizQuestion({ observation, onAnswer }: Props) {
                 observationId={observation.id}
                 license={observation.license_code}
             />
-            <div className={styles['location-info']}>{observation.place_guess}</div>
+            
+            <div className={styles['location-info']}>
+                {observation.place_guess}
+            </div>
 
             <div className={styles['options-grid']}>
                 {quizOptions.map((option) => (
@@ -86,4 +77,4 @@ export default function QuizQuestion({ observation, onAnswer }: Props) {
             </div>
         </div>
     );
-};
+}

@@ -1,26 +1,26 @@
-import { QuizAnswer } from '../../shared/constants';
 import styles from './styles.module.scss';
-
-interface Props {
-    answers: QuizAnswer[];
-    score: number;
-    totalQuestions: number;
-}
+import { QuizResultsProps } from './types';
+import { calculatePercentage, formatScore } from './utils';
 
 export default function QuizResults({
     answers,
     score,
     totalQuestions,
-}: Props) {
-    const percentage = Math.round((score / totalQuestions) * 100);
+}: QuizResultsProps) {
+    const percentage = calculatePercentage(score, totalQuestions);
+    const scoreText = formatScore(score, totalQuestions);
 
     return (
         <div className={styles.container}>
             <div className={styles.scoreCard}>
                 <h2>Quiz Results</h2>
                 <div className={styles.scoreDisplay}>
-                    <div className={styles.score}>{score} / {totalQuestions}</div>
-                    <div className={styles.percentage}>{percentage}%</div>
+                    <div className={styles.score}>
+                        {scoreText}
+                    </div>
+                    <div className={styles.percentage}>
+                        {percentage}%
+                    </div>
                 </div>
             </div>
 
@@ -28,7 +28,10 @@ export default function QuizResults({
                 {answers.map((answer, index) => (
                     <div
                         key={answer.observationId}
-                        className={`${styles.answerCard} ${answer.isCorrect ? styles.correct : styles.incorrect}`}
+                        className={`
+                            ${styles.answerCard} 
+                            ${answer.isCorrect ? styles.correct : styles.incorrect}
+                        `}
                     >
                         <div className={styles.questionNumber}>
                             Question {index + 1}

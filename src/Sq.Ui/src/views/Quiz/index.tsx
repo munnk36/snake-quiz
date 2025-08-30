@@ -1,91 +1,45 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
-import { useQuizObservation } from '../../services/api/hooks';
+import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import QuizQuestion from './QuizQuestion';
-import styles from './styles.module.scss';
 import QuizResults from './QuizResult';
-import { QuizState, QuizAnswer } from '../../shared/constants';
-import { Observation } from '../../services/api/typeDefs';
-import { getMediumImageUrl } from '../../shared/utils/imageUtils';
-
-// Define the quiz length as a constant for easier modification
-const QUIZ_LENGTH = 10;
+import QuizProgress from './QuizProgress';
+import QuizLoadingStates from './QuizLoadingStates';
+import styles from './styles.module.scss';
+import { 
+    useQuizState, 
+    useQuizNavigation, 
+    useObservationsCache, 
+    useCurrentQuestion,
+    QUIZ_LENGTH 
+} from './hooks';
 
 export default function QuizPage() {
     const [searchParams] = useSearchParams();
     const placeId = searchParams.get('place');
     const quizId = searchParams.get('id');
-    const navigate = useNavigate();
     
-    // Track the current question index and fetched observations
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [fetchedObservations, setFetchedObservations] = useState<Observation[]>([]);
-    const [quizState, setQuizState] = useState<QuizState>({
-        currentQuestionIndex: 0,
-        score: 0,
-        answers: [],
-    });
     
-    // Fetch the current observation
+    // Custom hooks for better separation of concerns
+    const { quizState, isCompleted, handleAnswer } = useQuizState();
+    const { addObservation, getObservation } = useObservationsCache();
     const { 
-        data, 
+        currentObservation, 
+        fetchedQuizId, 
         isLoading, 
         error 
-    } = useQuizObservation(currentQuestionIndex, quizId || '', placeId || '');
+    } = useCurrentQuestion(currentQuestionIndex, quizId || '', placeId || '');
     
-    const currentObservation = data?.observation;
-    const fetchedQuizId = data?.quizId;
+    // Handle URL synchronization
+    useQuizNavigation(fetchedQuizId, quizId, placeId, error);
     
-    // Track completion
-    const isCompleted = quizState.answers.length === QUIZ_LENGTH;
-    
-    // Handle redirection for canonical URL
     useEffect(() => {
-        if (!fetchedQuizId || error) return;
-    
-        const needsRedirect = fetchedQuizId && (
-            !quizId || 
-            quizId !== fetchedQuizId
-        );
-    
-        if (needsRedirect) {
-            const newParams = new URLSearchParams();
-            newParams.set('id', fetchedQuizId);
-            
-            if (placeId) {
-                newParams.set('place', placeId);
-            }
-    
-            navigate({
-                pathname: '/quiz',
-                search: `?${newParams.toString()}`
-            }, { 
-                replace: true,
-                state: { canonicalRedirect: true }
-            });
+        if (currentObservation) {
+            addObservation(currentObservation, currentQuestionIndex);
         }
-    }, [fetchedQuizId, quizId, placeId, navigate, error]);
+    }, [currentObservation, currentQuestionIndex, addObservation]);
     
-    // Add current observation to fetched list when loaded
-    useEffect(() => {
-        if (currentObservation && !fetchedObservations[currentQuestionIndex]) {
-            setFetchedObservations(prev => {
-                const updated = [...prev];
-                updated[currentQuestionIndex] = currentObservation;
-                return updated;
-            });
-        }
-    }, [currentObservation, currentQuestionIndex, fetchedObservations]);
-    
-    // Prefetch next question
-    const nextQuestionIndex = currentQuestionIndex + 1;
-    useQuizObservation(
-        nextQuestionIndex < QUIZ_LENGTH ? nextQuestionIndex : 0,
-        quizId || '', 
-        placeId || ''
-    );
-    
-    const handleAnswer = useCallback((
+    const onAnswer = (
         selectedTaxonId: number,
         isCorrect: boolean,
         userAnswer: {
@@ -93,34 +47,14 @@ export default function QuizPage() {
             scientificName: string;
         }
     ) => {
-        const observation = currentObservation || fetchedObservations[currentQuestionIndex];
+        const observation = currentObservation || getObservation(currentQuestionIndex);
         if (!observation) return;
         
-        setQuizState(prev => {
-            const newAnswer: QuizAnswer = {
-                observationId: observation.id,
-                selectedTaxonId,
-                isCorrect,
-                correctAnswer: {
-                    preferredCommonName: observation.taxon.preferred_common_name || '',
-                    scientificName: observation.taxon.name
-                },
-                userAnswer,
-                observationImageUrl: getMediumImageUrl(observation.photos[0].url)
-            };
-            
-            return {
-                currentQuestionIndex: prev.currentQuestionIndex + 1,
-                score: isCorrect ? prev.score + 1 : prev.score,
-                answers: [...prev.answers, newAnswer]
-            };
-        });
-        
+        handleAnswer(observation, selectedTaxonId, isCorrect, userAnswer);
         setCurrentQuestionIndex(prev => prev + 1);
-    }, [currentObservation, fetchedObservations, currentQuestionIndex]);
+    };
     
     if (isCompleted) {
-        // Show results when all questions are answered
         return (
             <QuizResults 
                 answers={quizState.answers}
@@ -130,32 +64,30 @@ export default function QuizPage() {
         );
     }
     
-    if (isLoading && fetchedObservations.length === 0) {
-        return <div>Loading quiz...</div>;
-    }
-
-    if (error) {
-        return <div>Error loading quiz: {error.message}</div>;
-    }
-    
-    if (!currentObservation && !fetchedObservations[currentQuestionIndex]) {
-        return <div>Loading next question...</div>;
-    }
-    
-    const observation = currentObservation || fetchedObservations[currentQuestionIndex];
+    const observation = currentObservation || getObservation(currentQuestionIndex);
     
     return (
-        <div className={styles['quiz-wrapper']}>
-            <div className={styles['quiz-progress']}>
-                <div>Question {currentQuestionIndex + 1} of {QUIZ_LENGTH}</div>
-                <div>Score: {quizState.score}</div>
-            </div>
-            <div className={styles['quiz-question']}>
-                <QuizQuestion
-                    observation={observation}
-                    onAnswer={handleAnswer}
+        <QuizLoadingStates
+            isLoading={isLoading}
+            error={error}
+            hasObservations={!!observation}
+        >
+            <div className={styles['quiz-wrapper']}>
+                <QuizProgress 
+                    currentQuestion={currentQuestionIndex + 1}
+                    totalQuestions={QUIZ_LENGTH}
+                    score={quizState.score}
                 />
+                
+                <div className={styles['quiz-question']}>
+                    {observation && (
+                        <QuizQuestion
+                            observation={observation}
+                            onAnswer={onAnswer}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        </QuizLoadingStates>
     );
 }
