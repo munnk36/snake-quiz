@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { getQuizObservations } from './observations';
+import { getQuizObservations, getSingleQuizObservation } from './observations';
 import { Observation, Taxon } from './typeDefs';
 import { useEffect, useState } from 'react';
 import { getSimilarSpecies } from './similar';
@@ -13,6 +13,19 @@ export default function useQuizObservations(
     return useQuery({
         queryKey: ['quiz', quizId || 'random'],
         queryFn: () => getQuizObservations(numberOfObservations, quizId, placeId),
+        staleTime: Infinity,
+        refetchOnWindowFocus: false
+    });
+};
+
+export function useQuizObservation(
+    questionIndex: number,
+    quizId?: string,
+    placeId?: string,
+): UseQueryResult<{ observation: Observation, quizId: string }, Error> {
+    return useQuery({
+        queryKey: ['quiz', quizId || 'random', questionIndex],
+        queryFn: () => getSingleQuizObservation(questionIndex, quizId, placeId),
         staleTime: Infinity,
         refetchOnWindowFocus: false
     });

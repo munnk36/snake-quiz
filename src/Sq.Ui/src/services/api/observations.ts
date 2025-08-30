@@ -221,12 +221,76 @@ function weightedRandomSelect(
     return items[0];
 }
 
+export async function getSingleQuizObservation(
+    questionIndex: number,
+    quizId?: string,
+    placeId?: string,
+): Promise<{ observation: Observation, quizId: string }> {
+    const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
+    const rng = seedrandom(generatedQuizId);
+    const MAX_PER_SPECIES = 2;
+
+    const speciesParams = new URLSearchParams({
+        verifiable: 'true',
+        identified: 'true',
+        captive: 'false',
+        native: 'true',
+        quality_grade: 'research',
+        taxon_id: SERPENTES_TAXON_ID.toString(),
+        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
+        photos: 'true',
+        term_id: '17',
+        term_value_id: '18,20', //only living organisms
+    });
+
+    if (placeId) {
+        speciesParams.append('place_id', placeId);
+    }
+
+    const speciesResponse = await fetch(
+        `${INATURALIST_API.V1}${V1_ENDPOINTS.SPECIES_COUNT}?${speciesParams}`
+    );
+    const speciesCountData = await speciesResponse.json();
+
+    const speciesList = speciesCountData.results.map((result: SpeciesCount) => ({
+        id: result.taxon.id,
+        weight: Math.min(result.count, 1000) // Cap the weight to prevent over-representation
+    }));
+
+    // Track which species have been used in previous questions
+    const speciesUsedCount: Record<number, number> = {};
+    
+    for (let i = 0; i < questionIndex; i++) {
+        let selectedSpecies;
+        do {
+            selectedSpecies = weightedRandomSelect(speciesList, rng);
+        } while (speciesUsedCount[selectedSpecies.id] >= MAX_PER_SPECIES);
+        
+        speciesUsedCount[selectedSpecies.id] = (speciesUsedCount[selectedSpecies.id] || 0) + 1;
+    }
+    
+    let targetSpecies;
+    do {
+        targetSpecies = weightedRandomSelect(speciesList, rng);
+    } while (speciesUsedCount[targetSpecies.id] >= MAX_PER_SPECIES);
+    
+    const observation = await getRandomObservationForSpecies(targetSpecies.id, rng, placeId);
+    
+    if (!observation) {
+        throw new Error("Failed to load observation");
+    }
+
+    return {
+        observation,
+        quizId: generatedQuizId
+    };
+}
+
 async function getRandomObservationForSpecies(
     targetSpeciesId: number,
     rng: () => number,
     placeId?: string
 ): Promise<Observation | null> {
-    // First get total count for this species
     const countParams = new URLSearchParams({
         taxon_id: targetSpeciesId.toString(),
         quality_grade: 'research',
