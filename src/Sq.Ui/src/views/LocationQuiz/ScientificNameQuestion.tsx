@@ -32,8 +32,8 @@ export default function ScientificNameQuestion({ observation, onAnswer }: QuizQu
                 observation.taxon.id,
                 correct,
                 {
-                    preferredCommonName: observation.taxon.preferred_common_name || observation.taxon.name,
-                    scientificName: observation.taxon.name
+                    preferredCommonName: '', // User didn't enter a common name in scientific mode
+                    scientificName: userInput.trim()
                 }
             );
         }, 2000);

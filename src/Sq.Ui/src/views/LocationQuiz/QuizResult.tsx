@@ -98,9 +98,11 @@ export default function QuizResults({
                         <div className={styles.answerDetails}>
                             <div className={styles.userAnswer}>
                                 <h4>Your Answer:</h4>
-                                <div className={styles.commonName}>
-                                    {answer.userAnswer.preferredCommonName}
-                                </div>
+                                {answer.userAnswer.preferredCommonName && (
+                                    <div className={styles.commonName}>
+                                        {answer.userAnswer.preferredCommonName}
+                                    </div>
+                                )}
                                 <div className={styles.scientificName}>
                                     <i>{answer.userAnswer.scientificName}</i>
                                 </div>
