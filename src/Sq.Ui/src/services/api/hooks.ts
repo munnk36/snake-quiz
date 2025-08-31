@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { getQuizObservations, getSingleQuizObservation } from './observations';
+import { getQuizObservations, getSingleQuizObservation as getQuizObservation } from './observations';
 import { Observation, Taxon } from './typeDefs';
 import { useEffect, useState } from 'react';
 import { getSimilarSpecies } from './similar';
@@ -25,7 +25,7 @@ export function useQuizObservation(
 ): UseQueryResult<{ observation: Observation, quizId: string }, Error> {
     return useQuery({
         queryKey: ['quiz', quizId || 'random', questionIndex],
-        queryFn: () => getSingleQuizObservation(questionIndex, quizId, placeId),
+        queryFn: () => getQuizObservation(questionIndex, quizId, placeId),
         staleTime: Infinity,
         refetchOnWindowFocus: false
     });
@@ -68,7 +68,7 @@ export function useQuizMultipleChoiceOptions(observedSnake?: Observation, number
                         !result.taxon.extinct &&
                         result.taxon.preferred_common_name &&
                         result.taxon.id !== observedSnake.taxon.min_species_taxon_id &&
-                        !observedSnake.taxon.children?.some( //if it's a hybrid or complex, technically all children are 'correct'
+                        !observedSnake.taxon.children?.some(
                             child => child.id === result.taxon.id
                         )
                     )

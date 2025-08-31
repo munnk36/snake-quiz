@@ -4,6 +4,8 @@ import { V1_ENDPOINTS, INATURALIST_API, SERPENTES_TAXON_ID } from "./constants";
 import { Observation, ObservationResponse, SpeciesCount } from './typeDefs';
 import { QuizData } from '../../shared/constants';
 
+const MAX_PER_SPECIES = 2;
+
 export async function getQuizObservationsV1 (
     numberOfObservations: number,
     quizId?: string,
@@ -173,6 +175,15 @@ export async function getQuizObservations(
     );
     const speciesCountData = await speciesResponse.json();
 
+    // Check if we have enough species for the quiz
+    const requiredSpecies = Math.ceil(numberOfObservations / MAX_PER_SPECIES);
+    
+    if (speciesCountData.results.length < requiredSpecies) {
+        throw new Error(
+            `Not enough species found in this location. Found ${speciesCountData.results.length} species, but need at least ${requiredSpecies} to create a ${numberOfObservations}-question quiz.`
+        );
+    }
+
     // weighted distribution of counts of species
     const speciesList = speciesCountData.results.map((result: SpeciesCount) => ({
         id: result.taxon.id,
@@ -182,7 +193,6 @@ export async function getQuizObservations(
     // weighted random selection
     const observations: Observation[] = [];
     const speciesUsedCount: Record<number, number> = {};
-    const MAX_PER_SPECIES = 2;
 
     while (observations.length < numberOfObservations) {
         // Get random page for current species
@@ -228,7 +238,6 @@ export async function getSingleQuizObservation(
 ): Promise<{ observation: Observation, quizId: string }> {
     const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
     const rng = seedrandom(generatedQuizId);
-    const MAX_PER_SPECIES = 2;
 
     const speciesParams = new URLSearchParams({
         verifiable: 'true',
@@ -251,6 +260,16 @@ export async function getSingleQuizObservation(
         `${INATURALIST_API.V1}${V1_ENDPOINTS.SPECIES_COUNT}?${speciesParams}`
     );
     const speciesCountData = await speciesResponse.json();
+
+    // Check if we have enough species for a full quiz (even though we're only getting one question)
+    const QUIZ_LENGTH = 10; // Full quiz length
+    const requiredSpecies = Math.ceil(QUIZ_LENGTH / MAX_PER_SPECIES);
+    
+    if (speciesCountData.results.length < requiredSpecies) {
+        throw new Error(
+            `Not enough species found in this location. Found ${speciesCountData.results.length} species, but need at least ${requiredSpecies} to create a ${QUIZ_LENGTH}-question quiz.`
+        );
+    }
 
     const speciesList = speciesCountData.results.map((result: SpeciesCount) => ({
         id: result.taxon.id,

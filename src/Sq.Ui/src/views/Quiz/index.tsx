@@ -20,7 +20,6 @@ export default function QuizPage() {
     
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     
-    // Custom hooks for better separation of concerns
     const { quizState, isCompleted, handleAnswer } = useQuizState();
     const { addObservation, getObservation } = useObservationsCache();
     const { 
@@ -30,7 +29,6 @@ export default function QuizPage() {
         error 
     } = useCurrentQuestion(currentQuestionIndex, quizId || '', placeId || '');
     
-    // Handle URL synchronization
     useQuizNavigation(fetchedQuizId, quizId, placeId, error);
     
     useEffect(() => {

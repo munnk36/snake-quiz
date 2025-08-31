@@ -29,7 +29,7 @@ export default function QuizQuestion({ observation, onAnswer }: QuizQuestionProp
         setSelectedOption(option);
         setShowResults(true);
 
-        // Delay to show the result before moving to next question
+        // Give the user a chance to see the result before next question
         setTimeout(() => {
             onAnswer(
                 option.taxonId,
@@ -39,7 +39,7 @@ export default function QuizQuestion({ observation, onAnswer }: QuizQuestionProp
                     scientificName: option.scientificName
                 }
             );
-        }, 1500);
+        }, 1200);
     };
 
     if (optionsLoading) {

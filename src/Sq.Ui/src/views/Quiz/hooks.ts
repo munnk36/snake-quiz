@@ -54,10 +54,6 @@ export function useQuizState() {
     };
 }
 
-/**
- * Custom hook for managing quiz navigation and URL synchronization
- * Handles canonical URL redirects when quiz ID changes
- */
 export function useQuizNavigation(
     fetchedQuizId: string | undefined,
     quizId: string | null,
@@ -93,10 +89,6 @@ export function useQuizNavigation(
     }, [fetchedQuizId, quizId, placeId, navigate, error]);
 }
 
-/**
- * Custom hook for managing observations cache
- * Provides efficient caching and retrieval of quiz observations
- */
 export function useObservationsCache() {
     const [fetchedObservations, setFetchedObservations] = useState<Observation[]>([]);
 
@@ -121,10 +113,6 @@ export function useObservationsCache() {
     };
 }
 
-/**
- * Custom hook for managing current question data
- * Handles API calls for current and next questions with prefetching
- */
 export function useCurrentQuestion(
     currentQuestionIndex: number,
     quizId: string,
@@ -136,7 +124,7 @@ export function useCurrentQuestion(
         error 
     } = useQuizObservation(currentQuestionIndex, quizId, placeId);
 
-    // Prefetch next question for better user experience
+    // Prefetch next questionn
     const nextQuestionIndex = currentQuestionIndex + 1;
     useQuizObservation(
         nextQuestionIndex < QUIZ_LENGTH ? nextQuestionIndex : 0,
