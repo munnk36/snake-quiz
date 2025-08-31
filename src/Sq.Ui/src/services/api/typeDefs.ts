@@ -17,11 +17,6 @@ export interface Observation {
     license_code: string;
 }
 
-export interface ObservationResponse {
-    total_results: number;
-    results: Observation[];
-}
-
 export interface Taxon {
     id: number;
     name: string;

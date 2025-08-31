@@ -1,3 +1,5 @@
+import { QuizAnswer } from '../../shared/constants';
+
 export interface LookalikeSpecies {
     common_name?: string;
     taxon_name: string;
@@ -21,6 +23,6 @@ export interface LookalikeChallenge {
 export interface LookalikeQuizState {
     currentQuestionIndex: number;
     score: number;
-    answers: unknown[];
+    answers: QuizAnswer[];
     isCompleted: boolean;
 }

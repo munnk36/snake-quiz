@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuizObservation } from '../../services/api/hooks';
+import { useLocationQuizObservation } from '../../services/api/hooks';
 import { QuizState, QuizAnswer } from '../../shared/constants';
 import { Observation } from '../../services/api/typeDefs';
 import { getMediumImageUrl } from '../../shared/utils/imageUtils';
@@ -123,11 +123,11 @@ export function useCurrentQuestion(
         data, 
         isLoading, 
         error 
-    } = useQuizObservation(currentQuestionIndex, quizId, placeId);
+    } = useLocationQuizObservation(currentQuestionIndex, quizId, placeId);
 
     // Prefetch next questionn
     const nextQuestionIndex = currentQuestionIndex + 1;
-    useQuizObservation(
+    useLocationQuizObservation(
         nextQuestionIndex < QUIZ_LENGTH ? nextQuestionIndex : 0,
         quizId, 
         placeId

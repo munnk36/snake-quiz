@@ -1,31 +1,18 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { getQuizObservations, getSingleQuizObservation as getQuizObservation } from './observations';
+import { getLocationQuizObservation } from './observations';
 import { Observation, Taxon } from './typeDefs';
 import { useEffect, useState } from 'react';
 import { getSimilarSpecies } from './similar';
-import { QuizData, QuizGuessOption } from '../../shared/constants';
+import { QuizGuessOption } from '../../shared/constants';
 
-export default function useQuizObservations(
-    numberOfObservations: number = 10,
-    quizId?: string,
-    placeId?: string,
-): UseQueryResult<QuizData, Error> {
-    return useQuery({
-        queryKey: ['quiz', quizId || 'random'],
-        queryFn: () => getQuizObservations(numberOfObservations, quizId, placeId),
-        staleTime: Infinity,
-        refetchOnWindowFocus: false
-    });
-};
-
-export function useQuizObservation(
+export function useLocationQuizObservation(
     questionIndex: number,
     quizId?: string,
     placeId?: string,
 ): UseQueryResult<{ observation: Observation, quizId: string }, Error> {
     return useQuery({
         queryKey: ['quiz', quizId || 'random', questionIndex],
-        queryFn: () => getQuizObservation(questionIndex, quizId, placeId),
+        queryFn: () => getLocationQuizObservation(questionIndex, quizId, placeId),
         staleTime: Infinity,
         refetchOnWindowFocus: false
     });

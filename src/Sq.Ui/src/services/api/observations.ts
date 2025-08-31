@@ -1,219 +1,9 @@
 import seedrandom from 'seedrandom';
 import { EDUCATIONAL_USE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
 import { V1_ENDPOINTS, INATURALIST_API, SERPENTES_TAXON_ID } from "./constants";
-import { Observation, ObservationResponse, SpeciesCount } from './typeDefs';
-import { QuizData } from '../../shared/constants';
+import { Observation, SpeciesCount } from './typeDefs';
 
 const MAX_PER_SPECIES = 2;
-
-export async function getQuizObservationsV1 (
-    numberOfObservations: number,
-    quizId?: string,
-    placeId?: string,
-): Promise<QuizData> {
-    const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
-    const rng = seedrandom(generatedQuizId);
-
-    // First get total count
-    const countParams = new URLSearchParams({
-        taxon_id: SERPENTES_TAXON_ID.toString(),
-        quality_grade: 'research',
-        photos: 'true',
-        per_page: '1',
-        verifiable: 'true',
-        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
-        term_id: '17',
-        term_value_id: '18,20', //only show live animals
-    });
-
-    if (placeId) {
-        countParams.append('place_id', placeId);
-    }
-
-    const countResponse = await fetch(
-        `${INATURALIST_API.V1}${V1_ENDPOINTS.OBSERVATIONS}?${countParams}`
-    );
-
-    if (!countResponse.ok) {
-        throw new Error('Failed to fetch observation count');
-    }
-
-    const countData: ObservationResponse = await countResponse.json();
-    
-    const maxRecords = 10000;
-    const maxPage = Math.min(
-        Math.floor(maxRecords / numberOfObservations),
-        Math.floor(countData.total_results / numberOfObservations)
-    );
-    
-    const randomPage = Math.floor(rng() * maxPage) + 1;
-
-    const observationParams = new URLSearchParams({
-        taxon_id: SERPENTES_TAXON_ID.toString(),
-        quality_grade: 'research',
-        photos: 'true',
-        per_page: numberOfObservations.toString(),
-        page: randomPage.toString(),
-        order: 'random',
-        verifiable: 'true',
-        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
-        term_id: '17',
-        term_value_id: '18,20',
-    });
-
-    if (placeId) {
-        observationParams.append('place_id', placeId);
-    }
-    
-    const observationResponse = await fetch(
-        `${INATURALIST_API.V1}${V1_ENDPOINTS.OBSERVATIONS}?${observationParams}`
-    );
-
-    if (!observationResponse.ok) {
-        throw new Error('Failed to fetch observations');
-    }
-
-    const observationData: ObservationResponse = await observationResponse.json();
-
-    const processedObservations = await Promise.all(
-        observationData.results.map(async (observation) => {
-            if (observation.taxon.rank === 'species') {
-                return observation;
-            }
-
-            if ((observation.taxon.rank === 'complex' || observation.taxon.rank === 'hybrid') &&
-                observation.taxon.min_species_taxon_id) {
-                try {
-                    const speciesResponse = await fetch(
-                        `${INATURALIST_API.V1}${V1_ENDPOINTS.TAXA}/${observation.taxon.min_species_taxon_id}`
-                    );
-
-                    if (!speciesResponse.ok) {
-                        throw new Error('Failed to fetch species data');
-                    }
-
-                    const taxonData = await speciesResponse.json();
-                    return {
-                        ...observation,
-                        taxon: {
-                            ...observation.taxon,
-                            children: taxonData.results[0].children,
-                        }
-                    };
-                } catch (error) {
-                    console.error('Error fetching species data:', error);
-                    return observation; // Fallback to original observation if fetch fails
-                }
-            }
-
-            //if our observation we need to back it out to the species level. (otherwise, users will always be able to know it's the subspecies)
-            if (observation.taxon.rank === 'subspecies' && observation.taxon.min_species_taxon_id) {
-                try {
-                    const speciesResponse = await fetch(
-                        `${INATURALIST_API.V1}${V1_ENDPOINTS.TAXA}/${observation.taxon.min_species_taxon_id}`
-                    );
-
-                    if (!speciesResponse.ok) {
-                        throw new Error('Failed to fetch species data');
-                    }
-
-                    const taxonData = await speciesResponse.json();
-
-                    return {
-                        ...observation,
-                        taxon: {
-                            ...observation.taxon,
-                            name: taxonData.results[0].name,
-                            preferred_common_name: taxonData.results[0].preferred_common_name,
-                            rank: 'species'
-                        }
-                    };
-                } catch (error) {
-                    console.error('Error fetching species data:', error);
-                    return observation; // Fallback to original observation if fetch fails
-                }
-            }
-
-            return observation;
-        })
-    );
-
-    return {
-        quizId: generatedQuizId,
-        observations: processedObservations,
-    };
-};
-
-export async function getQuizObservations(
-    numberOfObservations: number,
-    quizId?: string,
-    placeId?: string,
-): Promise<QuizData> {
-    const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
-    const rng = seedrandom(generatedQuizId);
-
-    // 1. First get all species in the place
-    const speciesParams = new URLSearchParams({
-        verifiable: 'true',
-        identified: 'true',
-        captive: 'false',
-        native: 'true',
-        quality_grade: 'research',
-        taxon_id: SERPENTES_TAXON_ID.toString(),
-        photo_license: EDUCATIONAL_USE_LICENSES.join(','),
-        photos: 'true',
-        term_id: '17',
-        term_value_id: '18,20', //only living organisms
-    });
-
-    if (placeId) {
-        speciesParams.append('place_id', placeId);
-    }
-
-    const speciesResponse = await fetch(
-        `${INATURALIST_API.V1}${V1_ENDPOINTS.SPECIES_COUNT}?${speciesParams}`
-    );
-    const speciesCountData = await speciesResponse.json();
-
-    // Check if we have enough species for the quiz
-    const requiredSpecies = Math.ceil(numberOfObservations / MAX_PER_SPECIES);
-    
-    if (speciesCountData.results.length < requiredSpecies) {
-        throw new Error(
-            `Not enough species found in this location. Found ${speciesCountData.results.length} species, but need at least ${requiredSpecies} to create a ${numberOfObservations}-question quiz.`
-        );
-    }
-
-    // weighted distribution of counts of species
-    const speciesList = speciesCountData.results.map((result: SpeciesCount) => ({
-        id: result.taxon.id,
-        weight: Math.min(result.count, 1000) // Cap the weight to prevent over-representation
-    }));
-
-    // weighted random selection
-    const observations: Observation[] = [];
-    const speciesUsedCount: Record<number, number> = {};
-
-    while (observations.length < numberOfObservations) {
-        // Get random page for current species
-        const targetSpecies = weightedRandomSelect(speciesList, rng);
-        if (speciesUsedCount[targetSpecies.id] >= MAX_PER_SPECIES) {
-            continue;
-        }
-
-        // Fetch observation for this species
-        const obs = await getRandomObservationForSpecies(targetSpecies.id, rng, placeId);
-        if (obs) {
-            observations.push(obs);
-            speciesUsedCount[targetSpecies.id] = (speciesUsedCount[targetSpecies.id] || 0) + 1;
-        }
-    }
-
-    return {
-        quizId: generatedQuizId,
-        observations
-    };
-}
 
 function weightedRandomSelect(
     items: Array<{ id: number; weight: number }>, 
@@ -231,7 +21,7 @@ function weightedRandomSelect(
     return items[0];
 }
 
-export async function getSingleQuizObservation(
+export async function getLocationQuizObservation(
     questionIndex: number,
     quizId?: string,
     placeId?: string,
@@ -429,4 +219,73 @@ async function getRandomObservationForSpecies(
     }
 
     return observation;
+}
+
+interface LookalikeQuizParams {
+    species: Array<{
+        taxon_id: string;
+    }>;
+    region: {
+        place_ids: number[];
+    };
+}
+
+export async function getLookalikeQuizObservation(
+    challenge: LookalikeQuizParams,
+    questionIndex: number,
+    quizId?: string,
+): Promise<{ observation: Observation, quizId: string }> {
+    const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
+    const rng = seedrandom(generatedQuizId);
+
+    const speciesTaxonIds = challenge.species.map(species => parseInt(species.taxon_id));
+    
+    const placeIds = challenge.region.place_ids;
+
+    // For lookalike quizzes, we want to distribute questions evenly across species
+    const speciesIndex = questionIndex % speciesTaxonIds.length;
+    const targetSpeciesId = speciesTaxonIds[speciesIndex];
+    
+    // Add some randomness to species selection while maintaining balance
+    // Every full cycle through all species, we shuffle the order
+    const cycleNumber = Math.floor(questionIndex / speciesTaxonIds.length);
+    if (cycleNumber > 0) {
+
+        const shuffledIndices = [...Array(speciesTaxonIds.length)].map((_, i) => i);
+        for (let i = shuffledIndices.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            [shuffledIndices[i], shuffledIndices[j]] = [shuffledIndices[j], shuffledIndices[i]];
+        }
+        const shuffledSpeciesIndex = shuffledIndices[speciesIndex];
+        const finalTargetSpeciesId = speciesTaxonIds[shuffledSpeciesIndex];
+        
+        const randomPlaceIndex = Math.floor(rng() * placeIds.length);
+        const selectedPlaceId = placeIds[randomPlaceIndex].toString();
+        
+        const observation = await getRandomObservationForSpecies(finalTargetSpeciesId, rng, selectedPlaceId);
+        
+        if (!observation) {
+            throw new Error(`Failed to load observation for species ${finalTargetSpeciesId} in the specified region`);
+        }
+
+        return {
+            observation,
+            quizId: generatedQuizId
+        };
+    }
+    
+    // Randomly select a place from the region's place IDs
+    const randomPlaceIndex = Math.floor(rng() * placeIds.length);
+    const selectedPlaceId = placeIds[randomPlaceIndex].toString();
+    
+    const observation = await getRandomObservationForSpecies(targetSpeciesId, rng, selectedPlaceId);
+    
+    if (!observation) {
+        throw new Error(`Failed to load observation for species ${targetSpeciesId} in the specified region`);
+    }
+
+    return {
+        observation,
+        quizId: generatedQuizId
+    };
 }
