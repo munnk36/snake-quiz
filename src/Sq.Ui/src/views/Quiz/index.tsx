@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import QuizQuestion from './QuizQuestion';
+import MultipleChoiceQuestion from './MultipleChoiceQuestion';
+import ScientificNameQuestion from './ScientificNameQuestion';
 import QuizResults from './QuizResult';
 import QuizProgress from './QuizProgress';
 import QuizLoadingStates from './QuizLoadingStates';
@@ -17,6 +18,7 @@ export default function QuizPage() {
     const [searchParams] = useSearchParams();
     const placeId = searchParams.get('place');
     const quizId = searchParams.get('id');
+    const mode = searchParams.get('mode') || 'multiple-choice';
     
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     
@@ -79,10 +81,17 @@ export default function QuizPage() {
                 
                 <div className={styles['quiz-question']}>
                     {observation && (
-                        <QuizQuestion
-                            observation={observation}
-                            onAnswer={onAnswer}
-                        />
+                        mode === 'scientific' ? (
+                            <ScientificNameQuestion
+                                observation={observation}
+                                onAnswer={onAnswer}
+                            />
+                        ) : (
+                            <MultipleChoiceQuestion
+                                observation={observation}
+                                onAnswer={onAnswer}
+                            />
+                        )
                     )}
                 </div>
             </div>

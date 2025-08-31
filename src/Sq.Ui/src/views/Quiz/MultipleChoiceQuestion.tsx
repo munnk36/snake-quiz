@@ -4,10 +4,10 @@ import { ObservationImage } from "../../shared/components";
 import { getLargeImageUrl } from "../../shared/utils/imageUtils";
 import { QuizGuessOption } from "../../shared/constants";
 import QuizOption from "./QuizOption";
-import styles from  './styles.module.scss'
+import styles from './styles.module.scss';
 import { QuizQuestionProps } from './types';
 
-export default function QuizQuestion({ observation, onAnswer }: QuizQuestionProps) {
+export default function MultipleChoiceQuestion({ observation, onAnswer }: QuizQuestionProps) {
     const {
         quizOptions,
         isLoading: optionsLoading,

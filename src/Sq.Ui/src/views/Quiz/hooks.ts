@@ -71,16 +71,17 @@ export function useQuizNavigation(
         );
 
         if (needsRedirect) {
-            const newParams = new URLSearchParams();
-            newParams.set('id', fetchedQuizId);
+            // Preserve existing search parameters (like mode)
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.set('id', fetchedQuizId);
             
             if (placeId) {
-                newParams.set('place', placeId);
+                currentParams.set('place', placeId);
             }
 
             navigate({
                 pathname: '/quiz',
-                search: `?${newParams.toString()}`
+                search: `?${currentParams.toString()}`
             }, { 
                 replace: true,
                 state: { canonicalRedirect: true }

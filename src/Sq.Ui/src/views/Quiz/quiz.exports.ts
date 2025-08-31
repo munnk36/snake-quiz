@@ -1,5 +1,6 @@
 export { default as QuizPage } from './index';
-export { default as QuizQuestion } from './QuizQuestion';
+export { default as MultipleChoiceQuestion } from './MultipleChoiceQuestion';
+export { default as ScientificNameQuestion } from './ScientificNameQuestion';
 export { default as QuizOption } from './QuizOption';
 export { default as QuizResults } from './QuizResult';
 export { default as QuizProgress } from './QuizProgress';

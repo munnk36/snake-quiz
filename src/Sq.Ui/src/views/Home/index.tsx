@@ -9,11 +9,11 @@ export default function HomePage() {
     const startQuiz = (placeId?: string) => {
         if (placeId) {
             navigate({
-                pathname: '/quiz',
+                pathname: '/mode-select',
                 search: `?place=${placeId}`
             });
         } else {
-            navigate('/quiz');
+            navigate('/mode-select');
         }
     };
 
