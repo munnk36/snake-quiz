@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styles from './styles.module.scss';
 import { QuizResultsProps } from './types';
 import { calculatePercentage, formatScore } from './utils';
@@ -7,8 +8,36 @@ export default function QuizResults({
     score,
     totalQuestions,
 }: QuizResultsProps) {
+    const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
     const percentage = calculatePercentage(score, totalQuestions);
     const scoreText = formatScore(score, totalQuestions);
+
+    const handleCopyUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            setCopyStatus('copied');
+            setTimeout(() => setCopyStatus('idle'), 2000);
+        } catch (err) {
+            console.error('Failed to copy URL:', err);
+            setCopyStatus('error');
+            setTimeout(() => setCopyStatus('idle'), 2000);
+        }
+    };
+
+    const handleGoHome = () => {
+        window.location.href = '/';
+    };
+
+    const getCopyButtonText = () => {
+        switch (copyStatus) {
+            case 'copied':
+                return '✓ Link Copied!';
+            case 'error':
+                return '✕ Copy Failed';
+            default:
+                return '🔗 Share Quiz';
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -21,6 +50,27 @@ export default function QuizResults({
                     <div className={styles.percentage}>
                         {percentage}%
                     </div>
+                </div>
+
+                <div className={styles.actionButtons}>
+                    <button
+                        onClick={handleCopyUrl}
+                        className={`${styles.shareButton} ${styles[copyStatus]}`}
+                        disabled={copyStatus !== 'idle'}
+                    >
+                        {getCopyButtonText()}
+                    </button>
+                    
+                    <p className={styles.shareMessage}>
+                        Challenge your friends with the same quiz!
+                    </p>
+
+                    <button
+                        onClick={handleGoHome}
+                        className={styles.homeButton}
+                    >
+                        🏠 Back to Home
+                    </button>
                 </div>
             </div>
 
