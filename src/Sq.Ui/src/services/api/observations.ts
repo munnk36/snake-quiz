@@ -2,6 +2,7 @@ import seedrandom from 'seedrandom';
 import { EDUCATIONAL_USE_LICENSES } from "../../shared/components/PhotoAttribution/constants";
 import { V1_ENDPOINTS, INATURALIST_API, SERPENTES_TAXON_ID } from "./constants";
 import { Observation, SpeciesCount } from './typeDefs';
+import { COTTONMOUTH_DISTRIBUTION } from "../../views/LookalikeQuiz/constants";
 
 const MAX_PER_SPECIES = 2;
 
@@ -230,6 +231,52 @@ interface LookalikeQuizParams {
     };
 }
 
+function getRegionalCottonmouthSpecies(placeId: number): string[] {
+    return COTTONMOUTH_DISTRIBUTION[placeId] || ['904170']; // Default to northern cottonmouth
+}
+
+export async function getCottonwaterLookalikeQuizObservation(
+    challenge: LookalikeQuizParams,
+    questionIndex: number,
+    quizId?: string,
+): Promise<{ observation: Observation, quizId: string }> {
+    const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
+    const rng = seedrandom(generatedQuizId);
+
+    // Randomly select a place from the region's place IDs first
+    const placeIds = challenge.region.place_ids;
+    const randomPlaceIndex = Math.floor(rng() * placeIds.length);
+    const selectedPlaceId = placeIds[randomPlaceIndex];
+    const selectedPlaceIdStr = selectedPlaceId.toString();
+    
+    // For cottonmouth vs watersnake challenge, we want just 2 categories
+    // Alternate between cottonmouth and watersnake questions
+    const isCottonmouthQuestion = questionIndex % 2 === 0;
+    
+    let targetSpeciesId: number;
+    
+    if (isCottonmouthQuestion) {
+        // Pick a cottonmouth species for this region
+        const cottonmouthSpecies = getRegionalCottonmouthSpecies(selectedPlaceId);
+        const cottonmouthIndex = Math.floor(rng() * cottonmouthSpecies.length);
+        targetSpeciesId = parseInt(cottonmouthSpecies[cottonmouthIndex]);
+    } else {
+        // Pick watersnake genus (Nerodia)
+        targetSpeciesId = 29299; // Nerodia genus
+    }
+    
+    const observation = await getRandomObservationForSpecies(targetSpeciesId, rng, selectedPlaceIdStr);
+    
+    if (!observation) {
+        throw new Error(`Failed to load observation for species ${targetSpeciesId} in the specified region`);
+    }
+
+    return {
+        observation,
+        quizId: generatedQuizId
+    };
+}
+
 export async function getLookalikeQuizObservation(
     challenge: LookalikeQuizParams,
     questionIndex: number,
@@ -250,7 +297,6 @@ export async function getLookalikeQuizObservation(
     // Every full cycle through all species, we shuffle the order
     const cycleNumber = Math.floor(questionIndex / speciesTaxonIds.length);
     if (cycleNumber > 0) {
-
         const shuffledIndices = [...Array(speciesTaxonIds.length)].map((_, i) => i);
         for (let i = shuffledIndices.length - 1; i > 0; i--) {
             const j = Math.floor(rng() * (i + 1));

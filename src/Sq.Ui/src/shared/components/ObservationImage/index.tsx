@@ -23,7 +23,6 @@ export default function ObservationImage({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-      // Set max-height CSS property on the container
       if (containerRef.current) {
           containerRef.current.style.maxHeight = `${MAX_HEIGHT_VH}vh`;
       }

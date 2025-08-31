@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getLookalikeQuizObservation } from '../../services/api/observations';
+import { getLookalikeQuizObservation, getCottonwaterLookalikeQuizObservation } from '../../services/api/observations';
 import { LookalikeChallenge, LookalikeQuizState } from './types';
 import { Observation } from '../../services/api/typeDefs';
 import { QUIZ_LENGTH } from './constants';
@@ -81,7 +81,12 @@ export function useCurrentLookalikeQuestion(
                 setIsLoading(true);
                 setError(null);
 
-                const result = await getLookalikeQuizObservation(
+                // Use specialized function for cottonmouth-watersnake challenge
+                const fetchFunction = challenge.id === 'cottonmouth-watersnake' 
+                    ? getCottonwaterLookalikeQuizObservation 
+                    : getLookalikeQuizObservation;
+
+                const result = await fetchFunction(
                     challenge,
                     currentQuestionIndex,
                     quizId

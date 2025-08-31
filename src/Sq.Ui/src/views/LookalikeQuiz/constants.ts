@@ -2,19 +2,31 @@ import { LookalikeChallenge } from './types';
 
 export const QUIZ_LENGTH = 10;
 
+// Geographic distribution data for cottonmouth species
+// Based on known ranges: FL/AL/GA have all species, other gulf states have only northern
+export const COTTONMOUTH_DISTRIBUTION: { [placeId: number]: string[] } = {
+    21: ['904173', '904170', '914127'], // Florida - all species
+    19: ['904173', '904170', '914127'], // Georgia - all species
+    23: ['904173',], // Alabama
+    43: ['904170'], // Texas
+    37: ['904170'], // North Carolina
+    27: ['904170'], // Mississippi
+    18: ['904170'], // Arkansas
+};
+
 export const LOOKALIKE_CHALLENGES: LookalikeChallenge[] = [
     {
         id: 'cottonmouth-watersnake',
         title: 'Cottonmouth vs Water Snake Challenge',
-        description: 'Learn to distinguish between venomous Cottonmouths, Copperheads (Agkistrodon) and harmless Water Snakes (Nerodia)',
+        description: 'Learn to distinguish between venomous Cottonmouths and harmless Water Snakes (Copperheads excluded for focused learning)',
         species: [
             {
-                common_name: 'Cottonmouths/Copperheads', 
+                common_name: 'Cottonmouths',
                 taxon_name: 'Agkistrodon sp.', 
-                taxon_id: '30668'
-            }, 
+                taxon_id: '30668' // This will be handled specially by getCottonwaterLookalikeQuizObservation
+            },
             {
-                common_name: 'Water Snakes',
+                common_name: 'Watersnakes',
                 taxon_name: 'Nerodia sp.', 
                 taxon_id: '29299'
             }
