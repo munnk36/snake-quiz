@@ -1,6 +1,6 @@
 
 import { useNavigate } from 'react-router';
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 import { PlaceSearch } from '../../shared/components';
 
 export default function HomePage() {
@@ -35,7 +35,7 @@ export default function HomePage() {
                 <div className={styles.quizSection}>
                     <h2 className={styles.sectionTitle}>Location-Based Quiz</h2>
                     <p className={styles.sectionDescription}>
-                        Test your knowledge of snakes in specific locations
+                        Test your knowledge of snakes in a specific location, or leave blank for the entire world!
                     </p>
                     <PlaceSearch onPlaceSelect={(placeId) => startQuiz(placeId)} />
                     <button

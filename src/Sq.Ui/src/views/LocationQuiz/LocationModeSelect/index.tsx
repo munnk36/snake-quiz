@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 
 export default function LocationModeSelectPage() {
     const navigate = useNavigate();

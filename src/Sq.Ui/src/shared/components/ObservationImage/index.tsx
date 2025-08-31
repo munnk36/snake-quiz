@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import PhotoAttribution from '../PhotoAttribution';
-import styles from './styles.module.css'
+import styles from './styles.module.scss'
 
 interface Props {
   imageUrl: string;

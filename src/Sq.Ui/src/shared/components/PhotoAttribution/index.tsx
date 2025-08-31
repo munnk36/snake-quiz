@@ -1,5 +1,5 @@
 import { V1_ENDPOINTS } from '../../../services/api/constants';
-import styles from './styles.module.css'
+import styles from './styles.module.scss'
 
 interface Props {
     observer: string;

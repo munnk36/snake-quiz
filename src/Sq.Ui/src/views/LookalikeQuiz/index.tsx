@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import styles from './styles.module.css';
+import { useEffect } from 'react';
+import styles from './styles.module.scss';
 import { LOOKALIKE_CHALLENGES } from './constants';
 import { 
     useLookalikeQuizState, 
@@ -8,11 +8,13 @@ import {
     useObservationsCache,
     QUIZ_LENGTH 
 } from './hooks';
+import QuizProgress from './QuizProgress';
+import QuizQuestion from './QuizQuestion';
+import QuizResult from './QuizResult';
 
 export default function LookalikeQuiz() {
     const [searchParams] = useSearchParams();
     const challengeId = searchParams.get('challenge');
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     
     const challenge = LOOKALIKE_CHALLENGES.find(c => c.id === challengeId);
     
@@ -22,13 +24,13 @@ export default function LookalikeQuiz() {
         currentObservation, 
         isLoading, 
         error 
-    } = useCurrentLookalikeQuestion(challenge || null, currentQuestionIndex);
+    } = useCurrentLookalikeQuestion(challenge || null, quizState.currentQuestionIndex);
 
     useEffect(() => {
         if (currentObservation) {
-            addObservation(currentObservation, currentQuestionIndex);
+            addObservation(currentObservation, quizState.currentQuestionIndex);
         }
-    }, [currentObservation, currentQuestionIndex, addObservation]);
+    }, [currentObservation, quizState.currentQuestionIndex, addObservation]);
 
     const onAnswer = (
         selectedTaxonId: number,
@@ -38,11 +40,10 @@ export default function LookalikeQuiz() {
             scientificName: string;
         }
     ) => {
-        const observation = currentObservation || getObservation(currentQuestionIndex);
+        const observation = currentObservation || getObservation(quizState.currentQuestionIndex);
         if (!observation) return;
         
         handleAnswer(observation, selectedTaxonId, isCorrect, userAnswer);
-        setCurrentQuestionIndex(prev => prev + 1);
     };
 
     const handleGoHome = () => {
@@ -96,82 +97,44 @@ export default function LookalikeQuiz() {
     if (isCompleted) {
         return (
             <div className={styles.container}>
-                <div className={styles.resultsContainer}>
-                    <h2>Challenge Complete!</h2>
-                    <div className={styles.scoreDisplay}>
-                        <div className={styles.score}>
-                            {quizState.score}/{QUIZ_LENGTH}
-                        </div>
-                        <div className={styles.percentage}>
-                            {Math.round((quizState.score / QUIZ_LENGTH) * 100)}%
-                        </div>
-                    </div>
-                    
-                    <div className={styles.actionButtons}>
-                        <button onClick={handleBackToModeSelect} className={styles.backButton}>
-                            Try Another Challenge
-                        </button>
-                        <button onClick={handleGoHome} className={styles.homeButton}>
-                            Go Home
-                        </button>
-                    </div>
+                <QuizResult 
+                    score={quizState.score}
+                    totalQuestions={QUIZ_LENGTH}
+                    answers={quizState.answers}
+                />
+                <div className={styles.actionButtons}>
+                    <button onClick={handleBackToModeSelect} className={styles.backButton}>
+                        Try Another Challenge
+                    </button>
+                    <button onClick={handleGoHome} className={styles.homeButton}>
+                        Go Home
+                    </button>
                 </div>
             </div>
         );
     }
 
-    const observation = currentObservation || getObservation(currentQuestionIndex);
+    const observation = currentObservation || getObservation(quizState.currentQuestionIndex);
     
     return (
         <div className={styles.container}>
             <div className={styles.quizHeader}>
                 <h1>{challenge.title}</h1>
-                <div className={styles.progress}>
-                    Question {currentQuestionIndex + 1} of {QUIZ_LENGTH} | Score: {quizState.score}
-                </div>
             </div>
+            
+            <QuizProgress 
+                currentQuestion={quizState.currentQuestionIndex + 1}
+                totalQuestions={QUIZ_LENGTH}
+                score={quizState.score}
+            />
 
             <div className={styles.quizContent}>
-                {isLoading ? (
-                    <div className={styles.loadingState}>
-                        <div className={styles.spinner}></div>
-                        <h3>Loading question {currentQuestionIndex + 1}...</h3>
-                    </div>
-                ) : observation ? (
-                    <div className={styles.questionContainer}>
-                        <div className={styles.observationImage}>
-                            <img 
-                                src={observation.photos[0]?.url} 
-                                alt="Snake observation" 
-                                className={styles.image}
-                            />
-                        </div>
-                        <div className={styles.questionText}>
-                            <h3>What species is this snake?</h3>
-                            <p>Location: {observation.place_guess}</p>
-                            
-                            {/* TODO: Add actual question component */}
-                            <div className={styles.placeholder}>
-                                <p>Quiz question component will go here</p>
-                                <p>Observation ID: {observation.id}</p>
-                                <p>Correct answer: {observation.taxon.name}</p>
-                                
-                                <button 
-                                    onClick={() => onAnswer(
-                                        observation.taxon.id,
-                                        true,
-                                        {
-                                            preferredCommonName: observation.taxon.preferred_common_name || '',
-                                            scientificName: observation.taxon.name
-                                        }
-                                    )}
-                                    className={styles.nextButton}
-                                >
-                                    Answer Correctly (Placeholder)
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                {observation ? (
+                    <QuizQuestion 
+                        observation={observation}
+                        challenge={challenge}
+                        onAnswer={onAnswer}
+                    />
                 ) : (
                     <div className={styles.errorState}>
                         <h3>Failed to load question</h3>

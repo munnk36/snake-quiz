@@ -32,6 +32,12 @@
   padding: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.quizSection:first-child {
+  z-index: 100;
 }
 
 .sectionTitle {
@@ -78,7 +84,7 @@
 }
 
 .challengeButton {
-  background: linear-gradient(45deg, #FF6B6B, #FF5252);
+  background: #4CAF50;
 }
 
 .startButton:hover,

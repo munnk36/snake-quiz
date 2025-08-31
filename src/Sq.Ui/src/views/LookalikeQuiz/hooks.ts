@@ -4,6 +4,13 @@ import { LookalikeChallenge, LookalikeQuizState } from './types';
 import { Observation } from '../../services/api/typeDefs';
 import { QUIZ_LENGTH } from './constants';
 
+interface LookalikeQuizOption {
+    taxonId: number;
+    scientificName: string;
+    preferredCommonName: string;
+    isCorrect: boolean;
+}
+
 export { QUIZ_LENGTH };
 
 export function useLookalikeQuizState() {
@@ -39,6 +46,7 @@ export function useLookalikeQuizState() {
 
         setQuizState(prev => ({
             ...prev,
+            currentQuestionIndex: prev.currentQuestionIndex + 1,
             answers: [...prev.answers, newAnswer],
             score: prev.score + (isCorrect ? 1 : 0),
             isCompleted: prev.currentQuestionIndex + 1 >= QUIZ_LENGTH
@@ -96,6 +104,52 @@ export function useCurrentLookalikeQuestion(
     return {
         currentObservation,
         fetchedQuizId,
+        isLoading,
+        error
+    };
+}
+
+export function useLookalikeQuizOptions(
+    challenge: LookalikeChallenge | null,
+    observation: Observation | null
+) {
+    const [quizOptions, setQuizOptions] = useState<LookalikeQuizOption[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!challenge || !observation) {
+            setQuizOptions([]);
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const options: LookalikeQuizOption[] = challenge.species.map(species => {
+                const challengeTaxonId = parseInt(species.taxon_id);
+                
+                const isCorrect = observation.taxon.id === challengeTaxonId || 
+                                observation.taxon.ancestor_ids.includes(challengeTaxonId);
+                
+                return {
+                    taxonId: challengeTaxonId,
+                    scientificName: species.taxon_name,
+                    preferredCommonName: species.common_name || '',
+                    isCorrect
+                };
+            });
+            setQuizOptions(options);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to generate options');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [challenge, observation]);
+
+    return {
+        quizOptions,
         isLoading,
         error
     };

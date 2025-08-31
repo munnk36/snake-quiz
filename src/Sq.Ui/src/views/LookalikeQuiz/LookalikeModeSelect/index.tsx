@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 import { LOOKALIKE_CHALLENGES } from '../constants';
 
 export default function LookalikeModeSelect() {
