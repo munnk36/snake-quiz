@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './styles.module.css';
 
-export default function ModeSelectPage() {
+export default function LocationModeSelectPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const placeId = searchParams.get('place');

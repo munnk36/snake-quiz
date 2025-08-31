@@ -9,12 +9,16 @@ export default function HomePage() {
     const startQuiz = (placeId?: string) => {
         if (placeId) {
             navigate({
-                pathname: '/mode-select',
+                pathname: '/location-mode-select',
                 search: `?place=${placeId}`
             });
         } else {
-            navigate('/mode-select');
+            navigate('/location-mode-select');
         }
+    };
+
+    const startLookalikeChallenge = () => {
+        navigate('/lookalike-mode-select');
     };
 
     return (
@@ -25,14 +29,36 @@ export default function HomePage() {
                     Test your knowledge of snake species! Use real observations from iNaturalist
                     to learn about snakes in your area.
                 </p>
-                <PlaceSearch onPlaceSelect={(placeId) => startQuiz(placeId)} />
-                <button
-                    className={styles.startButton}
-                    onClick={() => startQuiz()}
-                >
-                    Start Quiz
-                </button>
             </header>
+
+            <main className={styles.main}>
+                <div className={styles.quizSection}>
+                    <h2 className={styles.sectionTitle}>Location-Based Quiz</h2>
+                    <p className={styles.sectionDescription}>
+                        Test your knowledge of snakes in specific locations
+                    </p>
+                    <PlaceSearch onPlaceSelect={(placeId) => startQuiz(placeId)} />
+                    <button
+                        className={styles.startButton}
+                        onClick={() => startQuiz()}
+                    >
+                        Start Location Quiz
+                    </button>
+                </div>
+
+                <div className={styles.quizSection}>
+                    <h2 className={styles.sectionTitle}>Lookalike Challenges</h2>
+                    <p className={styles.sectionDescription}>
+                        Master the art of distinguishing between commonly confused snake species
+                    </p>
+                    <button
+                        className={styles.challengeButton}
+                        onClick={startLookalikeChallenge}
+                    >
+                        Browse Lookalike Challenges
+                    </button>
+                </div>
+            </main>
             <footer className={styles.footer}>
                 <div className={styles.footerLinks}>
                     <a 

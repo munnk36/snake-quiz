@@ -1,5 +1,7 @@
 import HomePage from './Home';
-import QuizPage from './LocationQuiz';
-import ModeSelectPage from './ModeSelect';
+import LocationQuizPage from './LocationQuiz';
+import LocationModeSelectPage from './LocationQuiz/LocationModeSelect';
+import LookalikeQuizPage from './LookalikeQuiz';
+import LookalikeModeSelectPage from './LookalikeModeSelect';
 
-export { HomePage, QuizPage, ModeSelectPage };
+export { HomePage, LocationQuizPage, LocationModeSelectPage, LookalikeQuizPage, LookalikeModeSelectPage };

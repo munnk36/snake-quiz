@@ -14,7 +14,7 @@ import {
     QUIZ_LENGTH 
 } from './hooks';
 
-export default function QuizPage() {
+export default function LocationQuizPage() {
     const [searchParams] = useSearchParams();
     const placeId = searchParams.get('place');
     const quizId = searchParams.get('id');
