@@ -6,6 +6,44 @@ import { COTTONMOUTH_DISTRIBUTION } from "../../views/LookalikeQuiz/constants";
 
 const MAX_PER_SPECIES = 2;
 
+// New function to generate quiz sequence
+function generateQuizSequence(
+    numQuestions: number,
+    numSpecies: number,
+    numPlaces: number,
+    rng: () => number
+): { speciesIndices: number[], placeIds: number[] } {
+    const speciesIndices: number[] = [];
+    const placeIds: number[] = [];
+    
+    // Calculate distribution
+    const targetPerSpecies = Math.floor(numQuestions / numSpecies);
+    const extraQuestions = numQuestions % numSpecies;
+    
+    // Create a pool of species indices with the right distribution
+    const speciesPool: number[] = [];
+    for (let i = 0; i < numSpecies; i++) {
+        const count = targetPerSpecies + (i < extraQuestions ? 1 : 0);
+        for (let j = 0; j < count; j++) {
+            speciesPool.push(i);
+        }
+    }
+    
+    // Shuffle the pool to randomize order
+    for (let i = speciesPool.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [speciesPool[i], speciesPool[j]] = [speciesPool[j], speciesPool[i]];
+    }
+    
+    // Assign shuffled species and random places
+    for (let i = 0; i < numQuestions; i++) {
+        speciesIndices.push(speciesPool[i]);
+        placeIds.push(Math.floor(rng() * numPlaces));
+    }
+    
+    return { speciesIndices, placeIds };
+}
+
 function weightedRandomSelect(
     items: Array<{ id: number; weight: number }>, 
     rng: () => number
@@ -243,29 +281,34 @@ export async function getCottonwaterLookalikeQuizObservation(
     const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
     const rng = seedrandom(generatedQuizId);
 
-    // Randomly select a place from the region's place IDs first
+    // Generate the quiz sequence once based on the quiz ID
+    const QUIZ_LENGTH = 10;
     const placeIds = challenge.region.place_ids;
-    const randomPlaceIndex = Math.floor(rng() * placeIds.length);
-    const selectedPlaceId = placeIds[randomPlaceIndex];
-    const selectedPlaceIdStr = selectedPlaceId.toString();
+    const sequence = generateQuizSequence(QUIZ_LENGTH, 2, placeIds.length, rng);
     
-    // For cottonmouth vs watersnake challenge, we want just 2 categories
-    // Alternate between cottonmouth and watersnake questions
-    const isCottonmouthQuestion = questionIndex % 2 === 0;
+    // Get the species and place for this specific question
+    const speciesIndex = sequence.speciesIndices[questionIndex];
+    const placeIndex = sequence.placeIds[questionIndex];
+    const selectedPlaceId = placeIds[placeIndex];
+    const selectedPlaceIdStr = selectedPlaceId.toString();
     
     let targetSpeciesId: number;
     
-    if (isCottonmouthQuestion) {
+    if (speciesIndex === 0) {
         // Pick a cottonmouth species for this region
         const cottonmouthSpecies = getRegionalCottonmouthSpecies(selectedPlaceId);
-        const cottonmouthIndex = Math.floor(rng() * cottonmouthSpecies.length);
+        // Use a separate RNG call for selecting which cottonmouth species
+        const cottonmouthRng = seedrandom(generatedQuizId + questionIndex);
+        const cottonmouthIndex = Math.floor(cottonmouthRng() * cottonmouthSpecies.length);
         targetSpeciesId = parseInt(cottonmouthSpecies[cottonmouthIndex]);
     } else {
         // Pick watersnake genus (Nerodia)
         targetSpeciesId = 29299; // Nerodia genus
     }
     
-    const observation = await getRandomObservationForSpecies(targetSpeciesId, rng, selectedPlaceIdStr);
+    // Create a question-specific RNG for observation selection
+    const observationRng = seedrandom(generatedQuizId + '-obs-' + questionIndex);
+    const observation = await getRandomObservationForSpecies(targetSpeciesId, observationRng, selectedPlaceIdStr);
     
     if (!observation) {
         throw new Error(`Failed to load observation for species ${targetSpeciesId} in the specified region`);
@@ -285,46 +328,21 @@ export async function getLookalikeQuizObservation(
     const generatedQuizId = quizId || Math.random().toString(36).substring(2, 15);
     const rng = seedrandom(generatedQuizId);
 
+    // Generate the quiz sequence once based on the quiz ID
+    const QUIZ_LENGTH = 10;
     const speciesTaxonIds = challenge.species.map(species => parseInt(species.taxon_id));
-    
     const placeIds = challenge.region.place_ids;
-
-    // For lookalike quizzes, we want to distribute questions evenly across species
-    const speciesIndex = questionIndex % speciesTaxonIds.length;
+    const sequence = generateQuizSequence(QUIZ_LENGTH, speciesTaxonIds.length, placeIds.length, rng);
+    
+    // Get the species and place for this specific question
+    const speciesIndex = sequence.speciesIndices[questionIndex];
+    const placeIndex = sequence.placeIds[questionIndex];
     const targetSpeciesId = speciesTaxonIds[speciesIndex];
+    const selectedPlaceId = placeIds[placeIndex].toString();
     
-    // Add some randomness to species selection while maintaining balance
-    // Every full cycle through all species, we shuffle the order
-    const cycleNumber = Math.floor(questionIndex / speciesTaxonIds.length);
-    if (cycleNumber > 0) {
-        const shuffledIndices = [...Array(speciesTaxonIds.length)].map((_, i) => i);
-        for (let i = shuffledIndices.length - 1; i > 0; i--) {
-            const j = Math.floor(rng() * (i + 1));
-            [shuffledIndices[i], shuffledIndices[j]] = [shuffledIndices[j], shuffledIndices[i]];
-        }
-        const shuffledSpeciesIndex = shuffledIndices[speciesIndex];
-        const finalTargetSpeciesId = speciesTaxonIds[shuffledSpeciesIndex];
-        
-        const randomPlaceIndex = Math.floor(rng() * placeIds.length);
-        const selectedPlaceId = placeIds[randomPlaceIndex].toString();
-        
-        const observation = await getRandomObservationForSpecies(finalTargetSpeciesId, rng, selectedPlaceId);
-        
-        if (!observation) {
-            throw new Error(`Failed to load observation for species ${finalTargetSpeciesId} in the specified region`);
-        }
-
-        return {
-            observation,
-            quizId: generatedQuizId
-        };
-    }
-    
-    // Randomly select a place from the region's place IDs
-    const randomPlaceIndex = Math.floor(rng() * placeIds.length);
-    const selectedPlaceId = placeIds[randomPlaceIndex].toString();
-    
-    const observation = await getRandomObservationForSpecies(targetSpeciesId, rng, selectedPlaceId);
+    // Create a question-specific RNG for observation selection
+    const observationRng = seedrandom(generatedQuizId + '-obs-' + questionIndex);
+    const observation = await getRandomObservationForSpecies(targetSpeciesId, observationRng, selectedPlaceId);
     
     if (!observation) {
         throw new Error(`Failed to load observation for species ${targetSpeciesId} in the specified region`);
