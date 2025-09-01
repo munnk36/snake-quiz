@@ -51,7 +51,7 @@ export default function MultipleChoiceQuestion({ observation, onAnswer }: QuizQu
     }
 
     return (
-        <div className={styles['question-container']}>
+        <div className={styles.questionContainer}>
             <ObservationImage
                 imageUrl={getLargeImageUrl(observation.photos[0].url)}
                 observer={observation.user.name || observation.user.login}
@@ -59,11 +59,11 @@ export default function MultipleChoiceQuestion({ observation, onAnswer }: QuizQu
                 license={observation.license_code}
             />
             
-            <div className={styles['location-info']}>
+            <div className={styles.locationInfo}>
                 {observation.place_guess}
             </div>
 
-            <div className={styles['options-grid']}>
+            <div className={styles.quizOptions}>
                 {quizOptions.map((option) => (
                     <QuizOption
                         key={option.taxonId}

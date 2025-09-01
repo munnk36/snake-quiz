@@ -29,7 +29,7 @@ export default function QuizOption({
     return (
         <button
             className={`
-                ${styles['quiz-option']}
+                ${styles.option}
                 ${isSelected ? styles.selected : ''}
                 ${getStatusClass()}
                 ${disabled ? styles.disabled : ''}
@@ -39,18 +39,18 @@ export default function QuizOption({
             type="button"
             aria-pressed={isSelected}
         >
-            <div className={styles['quiz-option-content']}>
-                <div className={styles['common-name']}>
+            <div className={styles.optionContent}>
+                <div className={styles.commonName}>
                     {option.preferredCommonName}
                 </div>
-                <div className={styles['scientific-name']}>
+                <div className={styles.scientificName}>
                     <i>{option.scientificName}</i>
                 </div>
             </div>
 
             {showResultIcon && (
                 <div 
-                    className={styles['resultIcon']}
+                    className={styles.resultIcon}
                     aria-hidden="true"
                 >
                     {option.isCorrect ? '✓' : '✕'}

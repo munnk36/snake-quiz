@@ -6,10 +6,20 @@ export default function QuizProgress({
     totalQuestions, 
     score 
 }: QuizProgressProps) {
+    const percentage = ((currentQuestion - 1) / totalQuestions) * 100;
+
     return (
-        <div className={styles['quiz-progress']}>
-            <div>Question {currentQuestion} of {totalQuestions}</div>
-            <div>Score: {score}</div>
+        <div className={styles.progressContainer}>
+            <div className={styles.progressHeader}>
+                <div>Question {currentQuestion} of {totalQuestions}</div>
+                <div>Score: {score}</div>
+            </div>
+            <div className={styles.progressBar}>
+                <div 
+                    className={styles.progressFill}
+                    style={{ width: `${Math.max(0, percentage)}%` }}
+                ></div>
+            </div>
         </div>
     );
 }

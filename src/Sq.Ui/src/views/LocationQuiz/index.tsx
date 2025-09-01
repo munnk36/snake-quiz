@@ -67,19 +67,19 @@ export default function LocationQuizPage() {
     const observation = currentObservation || getObservation(currentQuestionIndex);
     
     return (
-        <QuizLoadingStates
-            isLoading={isLoading}
-            error={error}
-            hasObservations={!!observation}
-        >
-            <div className={styles['quiz-wrapper']}>
+        <div className={styles.container}>
+            <QuizLoadingStates
+                isLoading={isLoading}
+                error={error}
+                hasObservations={!!observation}
+            >
                 <QuizProgress 
                     currentQuestion={currentQuestionIndex + 1}
                     totalQuestions={QUIZ_LENGTH}
                     score={quizState.score}
                 />
                 
-                <div className={styles['quiz-question']}>
+                <div className={styles.quizContent}>
                     {observation && (
                         mode === 'scientific' ? (
                             <ScientificNameQuestion
@@ -94,7 +94,7 @@ export default function LocationQuizPage() {
                         )
                     )}
                 </div>
-            </div>
-        </QuizLoadingStates>
+            </QuizLoadingStates>
+        </div>
     );
 }
