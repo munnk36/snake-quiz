@@ -6,6 +6,7 @@ import {
     useLookalikeQuizState, 
     useCurrentLookalikeQuestion, 
     useObservationsCache,
+    useLookalikeQuizNavigation,
     QUIZ_LENGTH 
 } from './hooks';
 import QuizProgress from './QuizProgress';
@@ -15,6 +16,7 @@ import QuizResult from './QuizResult';
 export default function LookalikeQuiz() {
     const [searchParams] = useSearchParams();
     const challengeId = searchParams.get('challenge');
+    const quizId = searchParams.get('id');
     
     const challenge = LOOKALIKE_CHALLENGES.find(c => c.id === challengeId);
     
@@ -22,9 +24,12 @@ export default function LookalikeQuiz() {
     const { addObservation, getObservation } = useObservationsCache();
     const { 
         currentObservation, 
+        fetchedQuizId,
         isLoading, 
         error 
-    } = useCurrentLookalikeQuestion(challenge || null, quizState.currentQuestionIndex);
+    } = useCurrentLookalikeQuestion(challenge || null, quizState.currentQuestionIndex, quizId || undefined);
+    
+    useLookalikeQuizNavigation(fetchedQuizId, quizId, challengeId, error);
 
     useEffect(() => {
         if (currentObservation) {

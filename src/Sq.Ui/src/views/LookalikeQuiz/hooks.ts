@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getLookalikeQuizObservation, getCottonwaterLookalikeQuizObservation } from '../../services/api/observations';
 import { LookalikeChallenge, LookalikeQuizState } from './types';
 import { Observation } from '../../services/api/typeDefs';
@@ -61,6 +62,42 @@ export function useLookalikeQuizState() {
     };
 }
 
+export function useLookalikeQuizNavigation(
+    fetchedQuizId: string | undefined,
+    quizId: string | null,
+    challengeId: string | null,
+    error: string | null
+) {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!fetchedQuizId || error) return;
+
+        const needsRedirect = fetchedQuizId && (
+            !quizId || 
+            quizId !== fetchedQuizId
+        );
+
+        if (needsRedirect) {
+            // Preserve existing search parameters
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.set('id', fetchedQuizId);
+            
+            if (challengeId) {
+                currentParams.set('challenge', challengeId);
+            }
+
+            navigate({
+                pathname: '/lookalike-quiz',
+                search: `?${currentParams.toString()}`
+            }, { 
+                replace: true,
+                state: { canonicalRedirect: true }
+            });
+        }
+    }, [fetchedQuizId, quizId, challengeId, navigate, error]);
+}
+
 export function useCurrentLookalikeQuestion(
     challenge: LookalikeChallenge | null,
     currentQuestionIndex: number,
@@ -99,6 +136,7 @@ export function useCurrentLookalikeQuestion(
                 console.error('Error fetching lookalike quiz observation:', err);
                 setError(err instanceof Error ? err.message : 'An error occurred');
                 setCurrentObservation(null);
+                setFetchedQuizId('');
             } finally {
                 setIsLoading(false);
             }
@@ -165,16 +203,16 @@ export function useLookalikeQuizOptions(
 export function useObservationsCache() {
     const [observationsCache, setObservationsCache] = useState<Record<number, Observation>>({});
 
-    const addObservation = (observation: Observation, index: number) => {
+    const addObservation = useCallback((observation: Observation, index: number) => {
         setObservationsCache(prev => ({
             ...prev,
             [index]: observation
         }));
-    };
+    }, []);
 
-    const getObservation = (index: number) => {
+    const getObservation = useCallback((index: number) => {
         return observationsCache[index];
-    };
+    }, [observationsCache]);
 
     return {
         addObservation,
