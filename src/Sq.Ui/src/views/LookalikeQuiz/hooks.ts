@@ -9,6 +9,7 @@ interface LookalikeQuizOption {
     scientificName: string;
     preferredCommonName: string;
     isCorrect: boolean;
+    venomous: boolean;
 }
 
 export { QUIZ_LENGTH };
@@ -142,7 +143,8 @@ export function useLookalikeQuizOptions(
                     taxonId: challengeTaxonId,
                     scientificName: species.taxon_name,
                     preferredCommonName: species.common_name || '',
-                    isCorrect
+                    isCorrect,
+                    venomous: species.venomous
                 };
             });
             setQuizOptions(options);

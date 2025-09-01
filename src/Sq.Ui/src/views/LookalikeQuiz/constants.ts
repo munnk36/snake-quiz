@@ -22,17 +22,19 @@ export const LOOKALIKE_CHALLENGES: LookalikeChallenge[] = [
         species: [
             {
                 common_name: 'Cottonmouths',
-                taxon_name: 'Agkistrodon sp.', 
-                taxon_id: '30668' // This will be handled specially by getCottonwaterLookalikeQuizObservation
+                taxon_name: 'Agkistrodon piscivorous & Agkistrodon conanti', 
+                taxon_id: '30668', // This will be handled specially by getCottonwaterLookalikeQuizObservation
+                venomous: true
             },
             {
                 common_name: 'Watersnakes',
                 taxon_name: 'Nerodia sp.', 
-                taxon_id: '29299'
+                taxon_id: '29299',
+                venomous: false
             }
         ], 
         region: {
-            name: 'Southeastern United States', 
+            name: 'Gulf Coast - United States', 
             place_ids: [21, 23, 43, 19, 37, 27, 18] // gulf states
         },
         difficulty: 'easy'
@@ -45,21 +47,24 @@ export const LOOKALIKE_CHALLENGES: LookalikeChallenge[] = [
             {
                 common_name: 'Coral Snake',
                 taxon_name: 'Micrurus fulvius', 
-                taxon_id: '73867'
+                taxon_id: '73867',
+                venomous: true
             }, 
             {
                 common_name: 'Scarlet Snake',
                 taxon_name: 'Cemophora coccinea', 
-                taxon_id: '27376'
+                taxon_id: '27376',
+                venomous: false
             }, 
             {
                 common_name: 'Scarlet Kingsnake',
                 taxon_name: 'Lampropeltis elapsoides', 
-                taxon_id: '29793'
+                taxon_id: '29793',
+                venomous: false
             }
         ],
         region: {
-            name: 'Florida',
+            name: 'Florida, United States',
             place_ids: [21]
         }
     }

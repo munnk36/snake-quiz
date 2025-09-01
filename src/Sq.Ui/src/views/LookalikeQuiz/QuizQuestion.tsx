@@ -25,6 +25,7 @@ interface LookalikeQuizOption {
     scientificName: string;
     preferredCommonName: string;
     isCorrect: boolean;
+    venomous: boolean;
 }
 
 export default function LookalikeQuizQuestion({ 

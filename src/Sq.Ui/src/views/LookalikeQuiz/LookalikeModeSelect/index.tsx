@@ -24,7 +24,7 @@ export default function LookalikeModeSelect() {
                 </button>
                 <h1 className={styles.title}>Lookalike Challenges</h1>
                 <p className={styles.subtitle}>
-                    Test your skills with commonly confused snake species
+                    Test your skills with commonly confused snake species!
                 </p>
             </header>
 
@@ -39,11 +39,16 @@ export default function LookalikeModeSelect() {
                                 <h4>Species covered:</h4>
                                 <ul>
                                     {challenge.species.map((species, index) => (
-                                        <li key={index}>
-                                            <em>{species.taxon_name}</em>
-                                            {species.common_name && (
-                                                <span> ({species.common_name})</span>
-                                            )}
+                                        <li key={index} className={styles.speciesItem}>
+                                            <div className={styles.speciesInfo}>
+                                                <em>{species.taxon_name}</em>
+                                                {species.common_name && (
+                                                    <span> ({species.common_name})</span>
+                                                )}
+                                            </div>
+                                            <span className={`${styles.venomousLabel} ${species.venomous ? styles.venomous : styles.harmless}`}>
+                                                {species.venomous ? 'Dangerously Venomous' : 'Harmless'}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>

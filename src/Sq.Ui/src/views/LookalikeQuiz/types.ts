@@ -4,6 +4,7 @@ export interface LookalikeSpecies {
     common_name?: string;
     taxon_name: string;
     taxon_id: string;
+    venomous: boolean;
 }
 
 export interface LookalikeRegion {

@@ -102,6 +102,46 @@
     opacity: 0.9;
 }
 
+.speciesItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.speciesInfo {
+    flex: 1;
+    min-width: 200px;
+}
+
+.venomousLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &.venomous {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: #ffffff;
+        border: 1px solid #a855f7;
+        box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    &.harmless {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        border: 1px solid #34d399;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+}
+
 .region {
     font-size: 0.9rem;
     opacity: 0.9;
@@ -147,5 +187,15 @@
     .backButton {
         position: static;
         margin-bottom: 1rem;
+    }
+
+    .speciesItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .venomousLabel {
+        align-self: flex-end;
     }
 }

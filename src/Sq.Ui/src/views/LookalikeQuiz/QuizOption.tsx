@@ -5,6 +5,7 @@ interface LookalikeQuizOption {
     scientificName: string;
     preferredCommonName: string;
     isCorrect: boolean;
+    venomous: boolean;
 }
 
 interface LookalikeQuizOptionProps {
@@ -59,6 +60,9 @@ export default function LookalikeQuizOption({
                 </div>
                 <div className={styles.scientificName}>
                     <em>{option.scientificName}</em>
+                </div>
+                <div className={`${styles.venomousLabel} ${option.venomous ? styles.venomous : styles.harmless}`}>
+                    {option.venomous ? 'Dangerously Venomous' : 'Harmless'}
                 </div>
             </div>
             {showResultIcon && (
