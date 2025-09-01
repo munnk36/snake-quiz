@@ -283,6 +283,12 @@ export async function getCottonwaterLookalikeQuizObservation(
 
     // Generate the quiz sequence once based on the quiz ID
     const QUIZ_LENGTH = 10;
+    
+    // Safety check: ensure questionIndex is valid
+    if (questionIndex < 0 || questionIndex >= QUIZ_LENGTH) {
+        throw new Error(`Invalid question index: ${questionIndex}. Must be between 0 and ${QUIZ_LENGTH - 1}`);
+    }
+    
     const placeIds = challenge.region.place_ids;
     const sequence = generateQuizSequence(QUIZ_LENGTH, 2, placeIds.length, rng);
     
@@ -330,6 +336,12 @@ export async function getLookalikeQuizObservation(
 
     // Generate the quiz sequence once based on the quiz ID
     const QUIZ_LENGTH = 10;
+    
+    // Safety check: ensure questionIndex is valid
+    if (questionIndex < 0 || questionIndex >= QUIZ_LENGTH) {
+        throw new Error(`Invalid question index: ${questionIndex}. Must be between 0 and ${QUIZ_LENGTH - 1}`);
+    }
+    
     const speciesTaxonIds = challenge.species.map(species => parseInt(species.taxon_id));
     const placeIds = challenge.region.place_ids;
     const sequence = generateQuizSequence(QUIZ_LENGTH, speciesTaxonIds.length, placeIds.length, rng);

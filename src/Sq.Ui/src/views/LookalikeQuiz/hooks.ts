@@ -109,7 +109,7 @@ export function useCurrentLookalikeQuestion(
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!challenge) {
+        if (!challenge || currentQuestionIndex >= QUIZ_LENGTH) {
             setIsLoading(false);
             return;
         }
