@@ -3,8 +3,15 @@ import { QuizAnswer } from '../../shared/constants';
 export interface LookalikeSpecies {
     common_name?: string;
     taxon_name: string;
-    taxon_id: string;
+    taxon_id: string | string[];
     venomous: boolean;
+}
+
+export interface LookalikeAnswerGroup {
+    group_name: string;
+    common_name: string;
+    venomous: boolean;
+    species: LookalikeSpecies[];
 }
 
 export interface LookalikeRegion {
@@ -16,7 +23,7 @@ export interface LookalikeChallenge {
     id: string;
     title: string;
     description: string;
-    species: LookalikeSpecies[];
+    possibleAnswers: LookalikeAnswerGroup[];
     region: LookalikeRegion;
     difficulty?: 'easy' | 'medium' | 'hard';
     guide?: string;

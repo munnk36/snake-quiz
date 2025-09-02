@@ -63,19 +63,21 @@ export default function LookalikeModeSelect() {
                             <div className={styles.speciesList}>
                                 <h4>Species covered:</h4>
                                 <ul>
-                                    {challenge.species.map((species, index) => (
-                                        <li key={index} className={styles.speciesItem}>
-                                            <div className={styles.speciesInfo}>
-                                                <em>{species.taxon_name}</em>
-                                                {species.common_name && (
-                                                    <span> ({species.common_name})</span>
-                                                )}
-                                            </div>
-                                            <span className={`${styles.venomousLabel} ${species.venomous ? styles.venomous : styles.harmless}`}>
-                                                {species.venomous ? 'Dangerously Venomous' : 'Harmless'}
-                                            </span>
-                                        </li>
-                                    ))}
+                                    {challenge.possibleAnswers.flatMap(group => 
+                                        group.species.map((species, index) => (
+                                            <li key={`${group.group_name}-${index}`} className={styles.speciesItem}>
+                                                <div className={styles.speciesInfo}>
+                                                    <em>{species.taxon_name}</em>
+                                                    {species.common_name && (
+                                                        <span> ({species.common_name})</span>
+                                                    )}
+                                                </div>
+                                                <span className={`${styles.venomousLabel} ${species.venomous ? styles.venomous : styles.harmless}`}>
+                                                    {species.venomous ? 'Dangerously Venomous' : 'Harmless'}
+                                                </span>
+                                            </li>
+                                        ))
+                                    )}
                                 </ul>
                             </div>
                             

@@ -172,18 +172,26 @@ export function useLookalikeQuizOptions(
         setError(null);
 
         try {
-            const options: LookalikeQuizOption[] = challenge.species.map(species => {
-                const challengeTaxonId = parseInt(species.taxon_id);
-                
-                const isCorrect = observation.taxon.id === challengeTaxonId || 
-                                observation.taxon.ancestor_ids.includes(challengeTaxonId);
+            // Use the possibleAnswers structure
+            const options: LookalikeQuizOption[] = challenge.possibleAnswers.map(group => {
+                // Check if any species in this group matches the observation
+                const isCorrect = group.species.some(species => {
+                    const taxonIds = Array.isArray(species.taxon_id) 
+                        ? species.taxon_id.map(id => parseInt(id))
+                        : [parseInt(species.taxon_id)];
+                    
+                    return taxonIds.some(taxonId => 
+                        observation.taxon.id === taxonId || 
+                        observation.taxon.ancestor_ids.includes(taxonId)
+                    );
+                });
                 
                 return {
-                    taxonId: challengeTaxonId,
-                    scientificName: species.taxon_name,
-                    preferredCommonName: species.common_name || '',
+                    taxonId: parseInt(Array.isArray(group.species[0].taxon_id) ? group.species[0].taxon_id[0] : group.species[0].taxon_id),
+                    scientificName: group.species.map(s => s.taxon_name).join(', '),
+                    preferredCommonName: group.common_name,
                     isCorrect,
-                    venomous: species.venomous
+                    venomous: group.venomous
                 };
             });
             setQuizOptions(options);

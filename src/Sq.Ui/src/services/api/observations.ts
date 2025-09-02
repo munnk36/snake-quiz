@@ -226,9 +226,14 @@ async function getRandomObservationForSpecies(
 }
 
 interface LookalikeQuizParams {
-    species: Array<{
-        taxon_id: string;
-        common_name?: string;
+    possibleAnswers: Array<{
+        group_name: string;
+        common_name: string;
+        venomous: boolean;
+        species: Array<{
+            taxon_id: string | string[];
+            common_name?: string;
+        }>;
     }>;
     region: {
         place_ids?: number[];
@@ -253,11 +258,27 @@ export async function getCottonwaterLookalikeQuizObservation(
     let targetSpeciesId: number;
     
     if (speciesIndex === 0) {
-        const cottonmouthSpecies = challenge.species.find(s => s.common_name === 'Cottonmouths');
-        targetSpeciesId = parseInt(cottonmouthSpecies?.taxon_id || '30668');
+        const cottonmouthGroup = challenge.possibleAnswers.find(group => group.common_name === 'Cottonmouths');
+        if (cottonmouthGroup) {
+            // Get all taxon IDs from all species in the cottonmouth group
+            const allTaxonIds = cottonmouthGroup.species.flatMap(species => 
+                Array.isArray(species.taxon_id) ? species.taxon_id : [species.taxon_id]
+            );
+            // Randomly select one of the cottonmouth taxon IDs
+            const cottonmouthRng = seedrandom(generatedQuizId + '-cottonmouth-' + questionIndex);
+            const randomIndex = Math.floor(cottonmouthRng() * allTaxonIds.length);
+            targetSpeciesId = parseInt(allTaxonIds[randomIndex]);
+        } else {
+            targetSpeciesId = 30668; // fallback
+        }
     } else {
-        const nerodiaSpecies = challenge.species.find(s => s.common_name === 'Watersnakes');
-        targetSpeciesId = parseInt(nerodiaSpecies?.taxon_id || '29299');
+        const nerodiaGroup = challenge.possibleAnswers.find(group => group.common_name === 'Watersnakes');
+        if (nerodiaGroup && nerodiaGroup.species[0]) {
+            const taxonId = nerodiaGroup.species[0].taxon_id;
+            targetSpeciesId = parseInt(Array.isArray(taxonId) ? taxonId[0] : taxonId);
+        } else {
+            targetSpeciesId = 29299; // fallback
+        }
     }
     
     const observationRng = seedrandom(generatedQuizId + '-obs-' + questionIndex);
@@ -285,9 +306,11 @@ export async function getLookalikeQuizObservation(
         throw new Error(`Invalid question index: ${questionIndex}. Must be between 0 and ${quizLength - 1}`);
     }
     
-    const speciesTaxonIds = challenge.species.map(species => parseInt(species.taxon_id));
-    
-    const speciesRng = seedrandom(generatedQuizId + '-species-' + questionIndex);
+    const speciesTaxonIds = challenge.possibleAnswers.flatMap(group =>
+        group.species.flatMap(species =>
+            Array.isArray(species.taxon_id) ? species.taxon_id.map(id => parseInt(id)) : [parseInt(species.taxon_id)]
+        )
+    );    const speciesRng = seedrandom(generatedQuizId + '-species-' + questionIndex);
     const speciesIndex = Math.floor(speciesRng() * speciesTaxonIds.length);
     const targetSpeciesId = speciesTaxonIds[speciesIndex];
     

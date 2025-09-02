@@ -5,18 +5,38 @@ export const LOOKALIKE_CHALLENGES: LookalikeChallenge[] = [
         id: 'cottonmouth-watersnake',
         title: 'Cottonmouth vs. Watersnake Challenge',
         description: 'Learn to distinguish between venomous Cottonmouths and harmless Water Snakes (Copperheads excluded for focused learning)',
-        species: [
+        possibleAnswers: [
             {
+                group_name: 'cottonmouths',
                 common_name: 'Cottonmouths',
-                taxon_name: 'Agkistrodon piscivorous, Agkistrodon conanti', 
-                taxon_id: '30668', // This will be handled specially by getCottonwaterLookalikeQuizObservation
-                venomous: true
+                venomous: true,
+                species: [
+                    {
+                        common_name: 'Florida Cottonmouth',
+                        taxon_name: 'Agkistrodon conanti',
+                        taxon_id: '904173',
+                        venomous: true
+                    },
+                    {
+                        common_name: 'Northern Cottonmouth',
+                        taxon_name: 'Agkistrodon piscivorus',
+                        taxon_id: '904170',
+                        venomous: true
+                    },
+                ]
             },
             {
+                group_name: 'watersnakes',
                 common_name: 'Watersnakes',
-                taxon_name: 'Nerodia spp.', 
-                taxon_id: '29299',
-                venomous: false
+                venomous: false,
+                species: [
+                    {
+                        common_name: 'Watersnakes',
+                        taxon_name: 'Nerodia spp.',
+                        taxon_id: '29299',
+                        venomous: false
+                    }
+                ]
             }
         ], 
         region: {
@@ -52,24 +72,45 @@ Range: Watersnakes are more commonly found in faster-flowing streams and rivers,
         id: 'tricolor-challenge',
         title: 'Florida Tricolor Challenge', 
         description: 'Master the art of identifying Coral Snakes, Scarlet Snakes, and Scarlet Kingsnakes',
-        species: [
+        possibleAnswers: [
             {
+                group_name: 'coral_snake',
                 common_name: 'Coral Snake',
-                taxon_name: 'Micrurus fulvius', 
-                taxon_id: '73867',
-                venomous: true
-            }, 
+                venomous: true,
+                species: [
+                    {
+                        common_name: 'Coral Snake',
+                        taxon_name: 'Micrurus fulvius',
+                        taxon_id: '73867',
+                        venomous: true
+                    }
+                ]
+            },
             {
+                group_name: 'scarlet_snake',
                 common_name: 'Scarlet Snake',
-                taxon_name: 'Cemophora coccinea', 
-                taxon_id: '27376',
-                venomous: false
-            }, 
+                venomous: false,
+                species: [
+                    {
+                        common_name: 'Scarlet Snake',
+                        taxon_name: 'Cemophora coccinea',
+                        taxon_id: '27376',
+                        venomous: false
+                    }
+                ]
+            },
             {
+                group_name: 'scarlet_kingsnake',
                 common_name: 'Scarlet Kingsnake',
-                taxon_name: 'Lampropeltis elapsoides', 
-                taxon_id: '29793',
-                venomous: false
+                venomous: false,
+                species: [
+                    {
+                        common_name: 'Scarlet Kingsnake',
+                        taxon_name: 'Lampropeltis elapsoides',
+                        taxon_id: '29793',
+                        venomous: false
+                    }
+                ]
             }
         ],
         region: {
@@ -99,18 +140,32 @@ Geographic Range: While all three occur in Florida, their ranges vary. Coral sna
         id: 'mojave-western-diamondback',
         title: 'Mojave vs. Western Diamondback Challenge',
         description: 'Learn to distinguish between the highly venomous Mojave Rattlesnake and the Western Diamondback Rattlesnake',
-        species: [
+        possibleAnswers: [
             {
+                group_name: 'mojave_rattlesnake',
                 common_name: 'Mojave Rattlesnake',
-                taxon_name: 'Crotalus scutulatus',
-                taxon_id: '30719',
-                venomous: true
+                venomous: true,
+                species: [
+                    {
+                        common_name: 'Mojave Rattlesnake',
+                        taxon_name: 'Crotalus scutulatus',
+                        taxon_id: '30719',
+                        venomous: true
+                    }
+                ]
             },
             {
+                group_name: 'western_diamondback',
                 common_name: 'Western Diamondback Rattlesnake',
-                taxon_name: 'Crotalus atrox',
-                taxon_id: '30764',
-                venomous: true
+                venomous: true,
+                species: [
+                    {
+                        common_name: 'Western Diamondback Rattlesnake',
+                        taxon_name: 'Crotalus atrox',
+                        taxon_id: '30764',
+                        venomous: true
+                    }
+                ]
             }
         ],
         region: {
