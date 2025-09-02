@@ -9,7 +9,7 @@ export interface LookalikeSpecies {
 
 export interface LookalikeRegion {
     name: string;
-    place_ids: number[];
+    place_ids?: number[];
 }
 
 export interface LookalikeChallenge {

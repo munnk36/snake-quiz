@@ -1,17 +1,5 @@
 import { LookalikeChallenge } from './types';
 
-// Geographic distribution data for cottonmouth species
-// Based on known ranges: FL/AL/GA have all species, other gulf states have only northern
-export const COTTONMOUTH_DISTRIBUTION: { [placeId: number]: string[] } = {
-    21: ['904173', '904170', '914127'], // Florida - all species
-    19: ['904173', '904170', '914127'], // Georgia - all species
-    23: ['904173',], // Alabama
-    43: ['904170'], // Texas
-    37: ['904170'], // North Carolina
-    27: ['904170'], // Mississippi
-    18: ['904170'], // Arkansas
-};
-
 export const LOOKALIKE_CHALLENGES: LookalikeChallenge[] = [
     {
         id: 'cottonmouth-watersnake',
@@ -32,8 +20,7 @@ export const LOOKALIKE_CHALLENGES: LookalikeChallenge[] = [
             }
         ], 
         region: {
-            name: 'Gulf Coast - United States', 
-            place_ids: [21, 23, 43, 19, 37, 27, 18] // gulf states
+            name: 'Gulf Coast - United States'
         },
         difficulty: 'medium',
         guide: `
@@ -86,11 +73,14 @@ Range: Watersnakes are more commonly found in faster-flowing streams and rivers,
             }
         ],
         region: {
-            name: 'Florida, United States',
-            place_ids: [21],
+            name: 'Florida, United States'
         },
         difficulty: 'easy',
         guide: `
+Venom: Of the three snakes, only coral snakes are venomous elapids (related to cobras, mambas and kraits). Although bites are rare, they possess a neurotoxic venom that can be fatal to humans. Scarlet snakes and scarlet kingsnakes are non-venomous and pose no threat.
+
+What's Similar: Coral snakes, scarlet snakes, and scarlet kingsnakes all exhibit similar vibrant colors that serve as warning signals (Aposematism) to potential predators.
+
 Color Band Patterns: You may know the classic rhyme, "Red touches yellow, kills a fellow; red touches black, friend of Jack." While this rhyme is generally true for North American coral snakes, it's important to remember that some individuals can exhibit variations in colors (absence of black or yellow entirely), and aberrant, broken patterns. It's important to observe many characteristics of the snake before making a positive identification. Furthermore, this rhyme only applies to a few North American species. Coral snakes in other parts of the world do not follow this rule.
 
 Band Completeness: Both coral snakes and scarlet kingsnakes have bands that completely encircle the body, continuing across the belly. Scarlet scarlet snakes have mostly white bellies with incomplete red markings.
@@ -104,5 +94,47 @@ Size and Build: Coral snakes are generally smaller and more slender with a more 
 Habitat and Behavior: Coral snakes are secretive and fossorial (underground-dwelling), rarely seen on the surface except after rains. Scarlet kingsnakes are more terrestrial and may be found under logs or rocks. Scarlet snakes are also fossorial but slightly more surface-active than coral snakes.
 
 Geographic Range: While all three occur in Florida, their ranges vary. Coral snakes are found throughout most of Florida, scarlet kingsnakes prefer more northern and central areas, and scarlet snakes have a more limited distribution in northern Florida.
-    `}
+    `},
+    {
+        id: 'mojave-western-diamondback',
+        title: 'Mojave vs. Western Diamondback Challenge',
+        description: 'Learn to distinguish between the highly venomous Mojave Rattlesnake and the Western Diamondback Rattlesnake',
+        species: [
+            {
+                common_name: 'Mojave Rattlesnake',
+                taxon_name: 'Crotalus scutulatus',
+                taxon_id: '30719',
+                venomous: true
+            },
+            {
+                common_name: 'Western Diamondback Rattlesnake',
+                taxon_name: 'Crotalus atrox',
+                taxon_id: '30764',
+                venomous: true
+            }
+        ],
+        region: {
+            name: 'Southwestern United States'
+        },
+        difficulty: 'hard',
+        guide: `
+What's similar: Both species are large, heavy-bodied rattlesnakes found in desert and semi-desert environments of the southwestern United States. Both have diamond-shaped patterns and can be aggressive when threatened. Both are dangerously venomous and should be treated with extreme caution.
+
+Tail Banding: The most reliable distinguishing feature is the tail pattern. Mojave rattlesnakes have distinct black and white banded tails with the white bands being significantly wider than the black bands (often 2-3 times wider). Western diamondbacks have black and white banded tails where the bands are roughly equal in width, or the black bands may be slightly wider.
+
+Body Pattern: Mojave rattlesnakes typically have well-defined diamond or hexagonal shapes that are often outlined in light colors and filled with a lighter center. The diamonds tend to be more geometric and precise. Western diamondbacks have diamond patterns that are often less distinct, may be more irregular in shape, and the diamonds often become more faded or indistinct toward the tail.
+
+Ground Color: Mojave rattlesnakes often have a greenish, olive, or grayish-green ground color, though they can also be brown or gray. Western diamondbacks typically have a more brownish, tan, or grayish ground color without the greenish tint.
+
+Head Pattern: Both species have postocular stripes (lines running from behind the eye), but Mojave rattlesnakes often have a more distinct light-colored stripe bordered by dark lines. Western diamondbacks may have less distinct head striping, and the postocular (behind the eye) stripe may be less prominent or absent.
+
+Intraocular scales: Mojave rattlesnakes typically have two or three larger, more prominent scales on top of the head between the eyes (intraoculars). Western diamondbacks have four or five smaller scales in this region, often with additional small scales fragmenting the larger ones.
+
+Size and Build: Adult Western diamondbacks are generally larger and more robust, commonly reaching 4-5 feet in length with some specimens over 6 feet. Mojave rattlesnakes are typically smaller, usually 2-4 feet in length, with a somewhat more slender build.
+
+Habitat Preferences: While both inhabit desert environments, Mojave rattlesnakes prefer higher elevation desert areas, grasslands, and scrublands, often at elevations of 1,000-8,000 feet. Western diamondbacks are more commonly found in lower elevation deserts, though their ranges do overlap significantly.
+
+Geographic Distribution: Mojave rattlesnakes are found primarily in the Mojave and Sonoran deserts of California, Nevada, Arizona, and small parts of Utah and Mexico. Western diamondbacks have a broader range extending through much of the southwestern US, including Texas, New Mexico, Arizona, and into Mexico.
+`
+    }
 ];
