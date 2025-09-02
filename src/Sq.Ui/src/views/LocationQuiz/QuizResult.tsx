@@ -28,6 +28,10 @@ export default function QuizResults({
         window.location.href = '/';
     };
 
+    const handleNewRound = () => {
+        window.location.reload();
+    };
+
     const getCopyButtonText = () => {
         switch (copyStatus) {
             case 'copied':
@@ -53,24 +57,35 @@ export default function QuizResults({
                 </div>
 
                 <div className={styles.actionButtons}>
-                    <button
-                        onClick={handleCopyUrl}
-                        className={`${styles.shareButton} ${styles[copyStatus]}`}
-                        disabled={copyStatus !== 'idle'}
-                    >
-                        {getCopyButtonText()}
-                    </button>
-                    
-                    <p className={styles.shareMessage}>
-                        Challenge your friends with the same quiz!
-                    </p>
+                    <div className={styles.shareSection}>
+                        <button
+                            onClick={handleCopyUrl}
+                            className={`${styles.shareButton} ${styles[copyStatus]}`}
+                            disabled={copyStatus !== 'idle'}
+                        >
+                            {getCopyButtonText()}
+                        </button>
+                        
+                        <p className={styles.shareMessage}>
+                            Challenge your friends with the same quiz!
+                        </p>
+                    </div>
 
-                    <button
-                        onClick={handleGoHome}
-                        className={styles.homeButton}
-                    >
-                        🏠 Back to Home
-                    </button>
+                    <div className={styles.navigationButtons}>
+                        <button
+                            onClick={handleNewRound}
+                            className={styles.newRoundButton}
+                        >
+                            🔄 New Round
+                        </button>
+
+                        <button
+                            onClick={handleGoHome}
+                            className={styles.homeButton}
+                        >
+                            🏠 Back to Home
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -88,11 +103,18 @@ export default function QuizResults({
                         </div>
 
                         <div className={styles.imageContainer}>
-                            <img
-                                src={answer.observationImageUrl}
-                                alt="Observation"
-                                className={styles.observationImage}
-                            />
+                            <a 
+                                href={`https://www.inaturalist.org/observations/${answer.observationId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.observationLink}
+                            >
+                                <img
+                                    src={answer.observationImageUrl}
+                                    alt="Observation"
+                                    className={styles.observationImage}
+                                />
+                            </a>
                         </div>
 
                         <div className={styles.answerDetails}>
