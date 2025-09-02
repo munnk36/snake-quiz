@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './styles.module.scss';
 import { LOOKALIKE_CHALLENGES } from '../constants';
+import GuideModal from './GuideModal';
 
 export default function LookalikeModeSelect() {
     const navigate = useNavigate();
+    const [selectedGuide, setSelectedGuide] = useState<{ title: string; guide: string } | null>(null);
 
     const handleChallengeSelect = (challengeId: string) => {
         navigate({
@@ -14,6 +17,16 @@ export default function LookalikeModeSelect() {
 
     const handleBack = () => {
         navigate('/');
+    };
+
+    const handleShowGuide = (challenge: typeof LOOKALIKE_CHALLENGES[0]) => {
+        if (challenge.guide) {
+            setSelectedGuide({ title: challenge.title, guide: challenge.guide });
+        }
+    };
+
+    const handleCloseGuide = () => {
+        setSelectedGuide(null);
     };
 
     return (
@@ -31,7 +44,19 @@ export default function LookalikeModeSelect() {
             <div className={styles.challengeGrid}>
                 {LOOKALIKE_CHALLENGES.map((challenge) => (
                     <div key={challenge.id} className={styles.challengeCard}>
-                        <h3 className={styles.challengeTitle}>{challenge.title}</h3>
+                        <div className={styles.cardHeader}>
+                            <h3 className={styles.challengeTitle}>{challenge.title}</h3>
+                            {challenge.guide && (
+                                <button 
+                                    onClick={() => handleShowGuide(challenge)}
+                                    className={styles.guideButton}
+                                    title="How to Tell Them Apart"
+                                >
+                                    📖 Guide
+                                </button>
+                            )}
+                        </div>
+                        
                         <p className={styles.challengeDescription}>{challenge.description}</p>
                         
                         <div className={styles.challengeDetails}>
@@ -74,6 +99,13 @@ export default function LookalikeModeSelect() {
                     </div>
                 ))}
             </div>
+
+            <GuideModal 
+                isOpen={!!selectedGuide}
+                onClose={handleCloseGuide}
+                title={selectedGuide?.title || ''}
+                guide={selectedGuide?.guide || ''}
+            />
         </div>
     );
 }

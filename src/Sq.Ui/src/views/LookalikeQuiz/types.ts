@@ -19,6 +19,7 @@ export interface LookalikeChallenge {
     species: LookalikeSpecies[];
     region: LookalikeRegion;
     difficulty?: 'easy' | 'medium' | 'hard';
+    guide?: string;
 }
 
 export interface LookalikeQuizState {

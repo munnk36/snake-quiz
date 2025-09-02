@@ -1,0 +1,139 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal {
+    background: #2c3e50;
+    border-radius: 12px;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    border: 1px solid #34495e;
+}
+
+.header {
+    padding: 24px;
+    border-bottom: 1px solid #34495e;
+    position: relative;
+    background: #34495e;
+}
+
+.title {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #ecf0f1;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #bdc3c7;
+    font-weight: 500;
+}
+
+.closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #bdc3c7;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #415a77;
+        color: #ecf0f1;
+    }
+}
+
+.content {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.helpText {
+    margin: 0 0 24px 0;
+    padding: 16px;
+    background: rgba(52, 73, 94, 0.5);
+    border-left: 4px solid #3498db;
+    border-radius: 4px;
+    color: #ecf0f1;
+    font-size: 14px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.section {
+    margin-bottom: 24px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.sectionTitle {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ecf0f1;
+    border-left: 4px solid #3498db;
+    padding-left: 12px;
+}
+
+.sectionContent {
+    margin: 0;
+    line-height: 1.6;
+    color: #bdc3c7;
+    font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .overlay {
+        padding: 10px;
+    }
+
+    .modal {
+        max-height: 90vh;
+    }
+
+    .header {
+        padding: 20px;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 20px;
+        margin-right: 40px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+}
