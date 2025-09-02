@@ -10,9 +10,9 @@ import {
     useQuizState, 
     useQuizNavigation, 
     useObservationsCache, 
-    useCurrentQuestion,
-    QUIZ_LENGTH 
+    useCurrentQuestion 
 } from './hooks';
+import { DEFAULT_QUIZ_LENGTH } from '../../shared/constants';
 
 export default function LocationQuizPage() {
     const [searchParams] = useSearchParams();
@@ -59,7 +59,7 @@ export default function LocationQuizPage() {
             <QuizResults 
                 answers={quizState.answers}
                 score={quizState.score}
-                totalQuestions={QUIZ_LENGTH}
+                totalQuestions={DEFAULT_QUIZ_LENGTH}
             />
         );
     }
@@ -75,7 +75,7 @@ export default function LocationQuizPage() {
             >
                 <QuizProgress 
                     currentQuestion={currentQuestionIndex + 1}
-                    totalQuestions={QUIZ_LENGTH}
+                    totalQuestions={DEFAULT_QUIZ_LENGTH}
                     score={quizState.score}
                 />
                 

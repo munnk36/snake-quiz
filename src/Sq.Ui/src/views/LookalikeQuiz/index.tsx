@@ -7,7 +7,7 @@ import {
     useCurrentLookalikeQuestion, 
     useObservationsCache,
     useLookalikeQuizNavigation,
-    QUIZ_LENGTH 
+    DEFAULT_QUIZ_LENGTH 
 } from './hooks';
 import QuizProgress from './QuizProgress';
 import QuizQuestion from './QuizQuestion';
@@ -104,7 +104,7 @@ export default function LookalikeQuiz() {
             <div className={styles.container}>
                 <QuizResult 
                     score={quizState.score}
-                    totalQuestions={QUIZ_LENGTH}
+                    totalQuestions={DEFAULT_QUIZ_LENGTH}
                     answers={quizState.answers}
                 />
                 <div className={styles.actionButtons}>
@@ -129,7 +129,7 @@ export default function LookalikeQuiz() {
             
             <QuizProgress 
                 currentQuestion={quizState.currentQuestionIndex + 1}
-                totalQuestions={QUIZ_LENGTH}
+                totalQuestions={DEFAULT_QUIZ_LENGTH}
                 score={quizState.score}
             />
 

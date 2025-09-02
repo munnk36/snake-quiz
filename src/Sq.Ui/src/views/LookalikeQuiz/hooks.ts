@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getLookalikeQuizObservation, getCottonwaterLookalikeQuizObservation } from '../../services/api/observations';
 import { LookalikeChallenge, LookalikeQuizState } from './types';
 import { Observation } from '../../services/api/typeDefs';
-import { QUIZ_LENGTH } from './constants';
+import { DEFAULT_QUIZ_LENGTH } from '../../shared/constants';
 
 interface LookalikeQuizOption {
     taxonId: number;
@@ -13,7 +13,7 @@ interface LookalikeQuizOption {
     venomous: boolean;
 }
 
-export { QUIZ_LENGTH };
+export { DEFAULT_QUIZ_LENGTH };
 
 export function useLookalikeQuizState() {
     const [quizState, setQuizState] = useState<LookalikeQuizState>({
@@ -23,7 +23,7 @@ export function useLookalikeQuizState() {
         isCompleted: false
     });
 
-    const isCompleted = quizState.currentQuestionIndex >= QUIZ_LENGTH;
+    const isCompleted = quizState.currentQuestionIndex >= DEFAULT_QUIZ_LENGTH;
 
     const handleAnswer = (
         observation: Observation,
@@ -51,7 +51,7 @@ export function useLookalikeQuizState() {
             currentQuestionIndex: prev.currentQuestionIndex + 1,
             answers: [...prev.answers, newAnswer],
             score: prev.score + (isCorrect ? 1 : 0),
-            isCompleted: prev.currentQuestionIndex + 1 >= QUIZ_LENGTH
+            isCompleted: prev.currentQuestionIndex + 1 >= DEFAULT_QUIZ_LENGTH
         }));
     };
 
@@ -109,7 +109,7 @@ export function useCurrentLookalikeQuestion(
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!challenge || currentQuestionIndex >= QUIZ_LENGTH) {
+        if (!challenge || currentQuestionIndex >= DEFAULT_QUIZ_LENGTH) {
             setIsLoading(false);
             return;
         }
@@ -127,6 +127,7 @@ export function useCurrentLookalikeQuestion(
                 const result = await fetchFunction(
                     challenge,
                     currentQuestionIndex,
+                    DEFAULT_QUIZ_LENGTH,
                     quizId
                 );
 

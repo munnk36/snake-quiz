@@ -1,7 +1,5 @@
 import { LookalikeChallenge } from './types';
 
-export const QUIZ_LENGTH = 10;
-
 // Geographic distribution data for cottonmouth species
 // Based on known ranges: FL/AL/GA have all species, other gulf states have only northern
 export const COTTONMOUTH_DISTRIBUTION: { [placeId: number]: string[] } = {

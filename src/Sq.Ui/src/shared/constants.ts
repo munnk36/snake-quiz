@@ -33,3 +33,16 @@ export interface QuizData {
     quizId: string;
     observations: Observation[];
 }
+
+// Quiz Configuration Constants
+export const DEFAULT_QUIZ_LENGTH = 10;
+
+// Species Distribution Constants
+export const MAX_SPECIES_PER_QUIZ = 2;
+
+// API Limits and Caps
+export const INATURALIST_API_LIMIT = 10000;
+export const SPECIES_WEIGHT_CAP = 1000;
+
+// Pagination
+export const OBSERVATIONS_PER_PAGE = 1;

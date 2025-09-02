@@ -10,9 +10,10 @@ export {
     useQuizState,
     useQuizNavigation,
     useObservationsCache,
-    useCurrentQuestion,
-    QUIZ_LENGTH
+    useCurrentQuestion
 } from './hooks';
+import { DEFAULT_QUIZ_LENGTH } from '../../shared/constants';
+export { DEFAULT_QUIZ_LENGTH };
 
 export type {
     QuizQuestionProps,
